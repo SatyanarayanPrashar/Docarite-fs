@@ -67,7 +67,7 @@ def generate_tree(directory, prefix="", skip_names=None, skip_endings=None):
 
     return tree
 
-def list_output_structure(dummy: str = None):
+def list_output_structure(dummy: str = None) :
     """
     Lists the structure of the output folder in a tree format.
     """
