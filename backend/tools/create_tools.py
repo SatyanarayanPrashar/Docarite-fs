@@ -3,7 +3,7 @@ from termcolor import colored
 import subprocess
 
 from langchain_core.messages import HumanMessage
-from backend.agents.readme_worker.readme_graph_state import State
+from agents.readme_worker.readme_graph_state import State
 
 def read_file_content(file_path: str) -> str:
     """

@@ -5,10 +5,10 @@ import openai
 from langgraph.graph import StateGraph, END
 from langgraph.prebuilt import ToolNode, tools_condition
 
-from backend.agents.readme_worker.readme_agent import agent_worker
-from backend.agents.readme_worker.readme_tool import readme_tools
-from backend.agents.readme_worker.readme_graph_state import State
-from backend.tools.create_tools import clone_repo, get_structure
+from agents.readme_worker.readme_agent import agent_worker
+from agents.readme_worker.readme_tool import readme_tools
+from agents.readme_worker.readme_graph_state import State
+from tools.create_tools import clone_repo, get_structure
 
 load_dotenv()
 openai_api_key = os.getenv("OPENAI_API_KEY")
@@ -49,8 +49,8 @@ graph_builder.add_edge("execute_tools", "agent_worker")
 
 graph = graph_builder.compile()
 
-if __name__ == "__main__":
-    git_repo_url = "https://github.com/SatyanarayanPrashar/edloops-quiz"
+def readme_generator(git_repo_url: str):
+    # git_repo_url = "https://github.com/SatyanarayanPrashar/edloops-quiz"
     
     initial_state = {"messages": [], "git_url": git_repo_url}
 
@@ -70,11 +70,13 @@ if __name__ == "__main__":
             print("-----------------------------")
 
     print("Readme Graph execution finished.")
-
-    try:
-        graph_png = graph.get_graph().draw_mermaid_png()
-        with open("graph_readme_gen.png", "wb") as f:
-            f.write(graph_png)
-        print("Graph visualization saved as graph_readme_gen.png")
-    except Exception as e:
-        print(f"Could not generate graph visualization: {e}")
+    file_path = os.path.join(os.getcwd(), "output/readme.md")
+    if os.path.exists(file_path):
+        with open(file_path, "r") as file:
+            readme_content = file.read()
+        # Clear the file after reading its content
+        with open(file_path, "w") as file:
+            file.truncate(0)
+        return {"readme": readme_content}
+    else:
+        raise FileNotFoundError(f"Readme file not found at {file_path}")
