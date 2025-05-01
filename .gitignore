@@ -1,6 +1,19 @@
-/.DS_Store
-/.gitignore
+# macOS
+.DS_Store
+
+# env files
+*.env
 **/.env
+
+# Python
+__pycache__/
 **/__pycache__/
+
+# Node
+node_modules/
 **/node_modules/
-**/output/
+
+# Ignore specific backend folders and files
+backend/clone_repos/
+backend/output/
+backend/file_structure.txt
