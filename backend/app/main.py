@@ -1,10 +1,18 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-
+from fastapi.middleware.cors import CORSMiddleware
 from agents.docarite_worker import worker_docarite
 from agents.readme_worker.readme_graph import readme_generator
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # or ["*"] for all origins (not recommended in prod)
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class BuildRequest(BaseModel):
     git_url: str
