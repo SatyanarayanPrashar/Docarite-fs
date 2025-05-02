@@ -22,7 +22,7 @@ export default function Home() {
           {/* <div className="absolute bottom-28 shadow-[0px_0px_200px_100px_rgba(71,78,255,1)] h-20 w-20"></div> */}
           <Image
             className="z-10"
-            src="/logo_new.png"
+            src="/logo_no_name.png"
             // src="/logo_no_name.png"
             alt="Next.js logo"
             width={400}

@@ -14,7 +14,7 @@ export default function Navbar() {
                         <div className="flex gap-2 items-center">
                             <Image
                                 className=""
-                                src="/logo_new.png"
+                                src="/logo_no_name.png"
                                 alt="Next.js logo"
                                 width={25}
                                 height={10}
