@@ -1,3 +1,4 @@
+
 module.exports = {
     theme: {
       extend: {
@@ -7,7 +8,7 @@ module.exports = {
       },
     },
     plugins: [
-      require('tailwindcss-animate'),
+      require('tailwind-scrollbar'),
     ],
   }
   

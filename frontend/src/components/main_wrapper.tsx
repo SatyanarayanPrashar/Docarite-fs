@@ -10,7 +10,7 @@ export default function Main_wrapper({ children }: MainWrapperProps) {
         <div className="flex flex-col items-center h-screen">
             <Navbar />
             <div className="w-full px-10 h-full">
-                <div className="border-l border-r border-dashed p-5 border-neutral-300">
+                <div className="border-l border-r border-dashed border-neutral-300">
                     {children}
                 </div>
             </div>

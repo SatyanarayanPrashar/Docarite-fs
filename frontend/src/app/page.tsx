@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useState } from "react";
+import Link from "next/link";
 
 export default function Home() {
   const [tool, setTool] = useState("README Generator");
@@ -15,8 +16,6 @@ export default function Home() {
           <p className="text-sm font-medium tracking-wider text-transparent uppercase bg-clip-text bg-gradient-to-r from-blue-400 via-esmerald-600 to-blue-600"> <span className="font-bold">Save hours</span> of manually writing code documentation</p>
           <h1 className="leading-none text-5xl "> <span className="font-bold">AI</span> Code documentation tools</h1>
           <p className="font-light text-xl">Automated AI-powered tools to generate Code & Api documentation from your source code files</p>
-          {/* <p className="mt-3 text-neutral-600 font-extralight">Enter the URL of a public GitHub repository</p>
-          <input type="text" className="border p-2 rounded-sm font-extralight" placeholder="https://github.com/owner/repo"/> */}
           <Button className="bg-gradient-to-r from-blue-400 via-esmerald-600 to-blue-600 text-white font-bold rounded-md px-4 py-2 mt-5 hover:bg-gradient-to-l hover:from-green-500 hover:to-green-400 w-40">Get Started</Button>
         </div>
         <div className="flex w-1/2 justify-center ml-30">
@@ -33,9 +32,9 @@ export default function Home() {
       <div className="grid grid-cols-3 gap-10 mt-24 w-full h-20">
         <div
           className={cn(
-            "flex items-center justify-center border rounded-md shadow-xl cursor-pointer",
+            "flex items-center justify-center border rounded-md cursor-pointer",
             tool == "README Generator" &&
-            "bg-gradient-to-r from-neutral-100 via-white to-neutral-100"
+            "bg-gradient-to-r from-neutral-100 via-white to-neutral-100 shadow-xl"
           )}
           role="button"
           onClick={() => setTool("README Generator")}
@@ -44,9 +43,9 @@ export default function Home() {
         </div>
         <div
           className={cn(
-            "flex items-center justify-center border rounded-md shadow-xl cursor-pointer",
+            "flex items-center justify-center border rounded-md cursor-pointer",
             tool == "AI Code Documentation" &&
-            "bg-gradient-to-r from-neutral-100 via-white to-neutral-100"
+            "bg-gradient-to-r from-neutral-100 via-white to-neutral-100 shadow-xl"
           )}
           role="button"
           onClick={() => setTool("AI Code Documentation")}
@@ -55,9 +54,9 @@ export default function Home() {
         </div>
         <div
           className={cn(
-            "flex items-center justify-center border rounded-md shadow-xl cursor-pointer",
+            "flex items-center justify-center border rounded-md cursor-pointer",
             tool == "API Documentation" &&
-            "bg-gradient-to-r from-neutral-100 via-white to-neutral-100"
+            "bg-gradient-to-r from-neutral-100 via-white to-neutral-100 shadow-xl"
           )}
           role="button"
           onClick={() => setTool("API Documentation")}
@@ -67,8 +66,8 @@ export default function Home() {
       </div>
 
       {tool == "README Generator" && (
-        <div className="my-24 flex gap-4 items-center text-black">
-          <div className="flex w-[65%] justify-center border rounded-md shadow-2xl">
+        <div className="my-24 flex gap-4 items-center w-full justify-between text-black h-[25rem]">
+          <div className="flex justify-center border rounded-md shadow-2xl">
             <Image
               className="rounded-md"
               src="/readme.png"
@@ -82,13 +81,18 @@ export default function Home() {
             <p className="text-4xl font-medium text-transparent uppercase bg-clip-text bg-gradient-to-r from-blue-400 via-esmerald-600 to-blue-600"> <span className="font-bold">AI README</span> file generator</p>
             <p className="font-light text-xl">Customize your README file. Choose the sections you want to include.</p>
             <p className="font-light text-xl">Our markdown editor allows you to write and edit your code documentation on-site. No need to switch between tools.</p>
-            <Button className="bg-gradient-to-r from-blue-400 via-esmerald-600 to-blue-600 text-white font-bold rounded-md px-4 py-2 mt-5 hover:bg-gradient-to-l hover:from-green-500 hover:to-green-400 w-40">Get Started</Button>
+            <Link
+              href="/readme-generator"
+              className="bg-gradient-to-r from-blue-400 via-esmerald-600 to-blue-600 text-white font-bold rounded-md px-4 py-2 mt-5 hover:bg-gradient-to-l hover:from-green-500 hover:to-green-400 w-40"
+            >
+              Get Started
+            </Link>
           </div>
         </div>
       )}
       {tool == "AI Code Documentation" && (
-        <div className="my-24 flex gap-4 items-center text-black">
-          <div className="flex w-[65%] justify-center border rounded-md shadow-2xl">
+        <div className="my-24 flex gap-4 items-center w-full justify-between text-black h-[25rem]">
+          <div className="flex justify-center border rounded-md shadow-2xl h-[25rem]">
             <Image
               className="rounded-md"
               src="/documentation.png"
@@ -107,8 +111,8 @@ export default function Home() {
         </div>
       )}
       {tool == "API Documentation" && (
-        <div className="my-24 flex gap-4 items-center text-black">
-          <div className="flex w-[65%] h-[25rem] justify-center border rounded-md shadow-2xl">
+        <div className="my-24 flex gap-4 items-center w-full justify-between text-black h-[25rem]">
+          <div className="flex h-full justify-center border rounded-md shadow-2xl">
             <Image
               className="rounded-md object-cover"
               src="/api_doc.png"

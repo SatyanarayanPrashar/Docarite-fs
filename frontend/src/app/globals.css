@@ -2,7 +2,7 @@
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
-
+@plugin 'tailwind-scrollbar';
 :root {
   /* --foreground: #F8F7EF; */
   --radius: 0.625rem;
@@ -128,3 +128,12 @@ body {
 }
 
 
+.custom-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge, and Firefox */
+.custom-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
