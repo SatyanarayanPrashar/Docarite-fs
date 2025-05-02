@@ -7,7 +7,7 @@ class system_prompt:
 
     #Rules:
     - Always follow the given JSON schema to return your output.
-    - Follow the given structure of the Readme.md file.
+    - If user has not specified the sections, then follow the given structure of the Readme.md file.
 
     #Workflow:
     1. Analyze the file structure provided above.

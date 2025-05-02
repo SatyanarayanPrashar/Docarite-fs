@@ -20,6 +20,8 @@ class BuildRequest(BaseModel):
 
 class ReadmeRequest(BaseModel):
     git_url: str
+    include_section: str
+    additional_mssg: str
 
 @app.post("/docarite/build/")
 async def build_docs(req: BuildRequest):

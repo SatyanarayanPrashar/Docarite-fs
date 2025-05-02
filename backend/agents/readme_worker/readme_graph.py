@@ -49,10 +49,13 @@ graph_builder.add_edge("execute_tools", "agent_worker")
 
 graph = graph_builder.compile()
 
-def readme_generator(git_repo_url: str):
+def readme_generator(git_repo_url: str, include_section: str = None, additional_mssg: str = None):
     # git_repo_url = "https://github.com/SatyanarayanPrashar/edloops-quiz"
     
-    initial_state = {"messages": [], "git_url": git_repo_url}
+    initial_state = {"messages": [
+        {"role": "user", "content": f"Include these sections: {include_section}. Also {additional_mssg}"}
+    ],
+    "git_url": git_repo_url}
 
     print(f"Starting graph execution for URL: {git_repo_url}")
 

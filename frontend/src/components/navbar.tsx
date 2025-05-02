@@ -7,14 +7,14 @@ import Link from "next/link";
 
 export default function Navbar() {
     return (
-        <div className="border-b px-10 w-full border-neutral-300 sticky top-0 border-dashed text-black bg-white/30 backdrop-blur-md">
+        <div className="z-99 border-b px-10 w-full border-neutral-300 sticky top-0 border-dashed text-black bg-white/30 backdrop-blur-md">
             <div className="px-24 border-l border-r border-dashed p-4 border-neutral-300 h-full">
                 <div className="flex justify-between w-full">
                     <Link href="/">
                         <div className="flex gap-2 items-center">
                             <Image
                                 className=""
-                                src="/logo_no_name.png"
+                                src="/logo_new.png"
                                 alt="Next.js logo"
                                 width={25}
                                 height={10}

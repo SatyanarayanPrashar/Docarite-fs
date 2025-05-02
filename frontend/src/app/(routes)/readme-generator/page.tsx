@@ -48,8 +48,8 @@ export default function ReadmeGenerator() {
 
         const payload = {
             git_url: gitUrl,
-            // include_section: includedSections,
-            // additional_mssg: additionalMsg,
+            include_section: includedSections,
+            additional_mssg: additionalMsg,
         };
 
         console.log("Payload to send:", payload);
@@ -74,8 +74,8 @@ export default function ReadmeGenerator() {
                 throw new Error(errorData?.detail || `HTTP error! status: ${response.status}`);
             }
 
-            console.log("Request successful:", payload);
-            setResult(result_data);
+            const data = await response.json();
+            setResult(data.readme);
         } catch (err) {
             console.error("Request failed:", err);
         } finally {
@@ -192,66 +192,4 @@ export function Checkbox({
     )
 }
 
-
-const result_data = `
-## Edloops Quiz
-
-Edloops Quiz is a web application built using Next.js that allows users to engage with quizzes in an interactive way. The application leverages modern web technologies including React and Tailwind CSS to provide a smooth user experience and responsive design. We utilize various packages such as Lottie for animations and OpenAI for intelligent quiz functionalities.
-
-### Technologies Used
-- **Next.js**: A React framework for server-side rendering and static site generation.
-- **React**: A JavaScript library for building user interfaces.
-- **Tailwind CSS**: A utility-first CSS framework for styling our components.
-- **OpenAI**: Provides functionalities for dynamic quiz generation and AI integration.
-- **Lottie**: Used for animation to enhance user engagement.
- 
-# Getting Started
-
-## Prerequisites
-
-To run this project, you will need to have the following installed:
-- Node.js (>=14.x)
-- npm (Node Package Manager)
-
-## Setup
-
-1. Clone the repository:
-   \`\`\`bash
-   git clone https://github.com/yourusername/edloops-quiz.git
-   cd edloops-quiz
-   \`\`\`
-2. Install the dependencies:
-   \`\`\`bash
-   npm install
-   \`\`\`
-3. Run the development server:
-   \`\`\`bash
-   npm run dev
-   \`\`\`
-4. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
- 
-# Deployment
-
-You can deploy the Edloops Quiz application using Vercel. Follow these steps:
-1. Push your code to a GitHub repository.
-2. Go to the [Vercel website](https://vercel.com/) and sign in or create an account.
-3. Import your GitHub repository.
-4. Follow the prompts to deploy your application.
-
-For more detailed instructions, check out the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying).
- 
-# Contributing
-
-If you would like to contribute to the Edloops Quiz project, please follow these steps:
-1. Fork the repository.
-2. Create a new branch for your feature or bug fix.
-3. Make your changes and commit them.
-4. Push your changes to your forked repository.
-5. Submit a pull request.
- 
-# License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
- 
-
-`
+const llm_response = "{\"readme\":\"# Project Title and Description\\n\\n# Table of Contents\\n\\n# Getting Started\\n\\n# Deployment\\n\\n# Contributing guide\\n\\n# License\\n \\n# Project Title and Description\\n\\n## Attendance System\\n\\nThe Attendance System is a facial recognition application that utilizes Principal Component Analysis (PCA) for recognizing individuals from images. It aims to simplify attendance marking in various scenarios, leveraging advanced facial recognition technology for accuracy.\\n\\n## Technologies Used\\n\\nThis project is built using Python, which provides powerful libraries for image processing and machine learning. The PCA is utilized for dimensionality reduction and feature extraction from facial images.\\n \\n# Getting Started\\n\\n## Prerequisites\\n\\n- Python 3.x\\n- OpenCV\\n- NumPy\\n\\n## Step-by-step Guide\\n\\n1. Clone the repository:\\n   ```bash\\n   git clone https://your-repository-url.git\\n   cd attendanceSystem\\n   ```\\n2. Install the necessary libraries:\\n   ```bash\\n   pip install opencv-python numpy\\n   ```\\n3. Prepare your data:\\n   - Place the facial images in the `data/` directory. Create subfolders for each individual containing their images (e.g., `data/person1/`, `data/person2/`).\\n4. Run the main script to train the model:\\n   ```bash\\n   python main.py\\n   ```\\n \\n# Deployment\\n\\nTo deploy the Attendance System, ensure the following steps are completed:\\n\\n1. **Train the Model:** Execute the `main.py` script to train the facial recognition model. This step requires a dataset of images organized in the `data/` directory.\\n   ```bash\\n   python main.py\\n   ```\\n\\n2. **Run Face Recognition:** Use the `collect_faces.py` script for real-time face recognition and attendance marking. Make sure your machine has a working camera.\\n   ```bash\\n   python collect_faces.py\\n   ```\\n\\n3. **Attendance Tracking:** The attendance will be saved in an Excel file named `attendance.xlsx`, located in the project directory.\\n \\n# Contributing Guide\\n\\nContributions are welcome! If you would like to contribute to the Attendance System, please follow these steps:\\n\\n1. Fork the repository.\\n2. Create a new feature branch:\\n   ```bash\\n   git checkout -b feature/YourFeature\\n   ```\\n3. Make your changes and commit them:\\n   ```bash\\n   git commit -m 'Add some feature'\\n   ```\\n4. Push to the branch:\\n   ```bash\\n   git push origin feature/YourFeature\\n   ```\\n5. Open a pull request.\\n \\n# License\\n\\nThis project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.\\n \\n\"}"

@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: "Docarite",
   description: "Automated documentation",
   icons: {
-    icon: "/logo_no_name.png",
+    icon: "/logo_new.png",
   },
 };
 

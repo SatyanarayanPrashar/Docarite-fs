@@ -18,10 +18,12 @@ export default function Home() {
           <p className="font-light text-xl">Automated AI-powered tools to generate Code & Api documentation from your source code files</p>
           <Button className="bg-gradient-to-r from-blue-400 via-esmerald-600 to-blue-600 text-white font-bold rounded-md px-4 py-2 mt-5 hover:bg-gradient-to-l hover:from-green-500 hover:to-green-400 w-40">Get Started</Button>
         </div>
-        <div className="flex w-1/2 justify-center ml-30">
+        <div className="flex w-1/2 justify-center ml-20">
+          {/* <div className="absolute bottom-28 shadow-[0px_0px_200px_100px_rgba(71,78,255,1)] h-20 w-20"></div> */}
           <Image
-            className=""
-            src="/logo_no_name.png"
+            className="z-10"
+            src="/logo_new.png"
+            // src="/logo_no_name.png"
             alt="Next.js logo"
             width={400}
             height={70}
