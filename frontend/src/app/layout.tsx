@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Main_wrapper from "@/app/components/main_wrapper";
+import Main_wrapper from "@/components/main_wrapper";
 
 export const metadata: Metadata = {
   title: "Docarite",
