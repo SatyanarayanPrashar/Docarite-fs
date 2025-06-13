@@ -17,21 +17,22 @@ import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase"
 import { redirect, useRouter } from 'next/navigation'
 import { Separator } from "./separator"
+import Link from "next/link";
 
 const items = [
     {
         title: "Repositories",
-        url: "#repositories",
+        url: "/home/repositories",
         icon: Home,
     },
     {
         title: "Reports",
-        url: "#reports",
+        url: "/home/reports",
         icon: ClipboardList,
     },
     {
         title: "Configration",
-        url: "#configration",
+        url: "/home/configration",
         icon: Bolt,
     }
 ]
@@ -77,10 +78,10 @@ export function AppSidebar() {
                                 {items.map((item) => (
                                     <SidebarMenuItem key={item.title}>
                                         <SidebarMenuButton asChild size="lg">
-                                            <a href={item.url}>
+                                            <Link href={item.url}>
                                                 <item.icon />
                                                 <span className="text-[1rem]">{item.title}</span>
-                                            </a>
+                                            </Link>
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>
                                 ))}
