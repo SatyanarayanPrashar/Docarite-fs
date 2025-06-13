@@ -12,6 +12,14 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen items-center text-white relative z-10">
       <Navbar_landing />
+      <div className="fixed top-0 left-0 w-screen h-screen -z-10">
+        <Image
+          src="/backgound.png"
+          alt="Background"
+          fill
+          priority
+        />
+      </div>
       <h1 className="text-6xl font-extrabold text-center mt-48">Cut Code Review Time <br /> & Bugs in Half. Instantly.</h1>
       <h2 className="mt-6 text-xl text-center text-white/80">
         Supercharge your team to ship faster with the most advanced AI <br /> code reviews.

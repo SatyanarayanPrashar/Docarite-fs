@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import "./globals.css";
-import Image from "next/image";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { AppSidebar } from "@/components/ui/app-sidebar";
 
 export const metadata: Metadata = {
   title: "Docarite",
@@ -15,11 +15,14 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   return (
-    <html lang="en">
-      <body className="relative min-h-screen flex flex-col items-center">
-          {children}
-      </body>
-    </html>
+    <SidebarProvider>
+      <AppSidebar />
+      <main>
+        <SidebarTrigger />
+        {children}
+      </main>
+    </SidebarProvider>
   );
 }

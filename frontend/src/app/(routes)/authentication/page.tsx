@@ -2,6 +2,8 @@
 
 import { supabase } from '@/lib/supabase'
 import Image from "next/image";
+import { redirect } from 'next/navigation';
+import { useEffect } from 'react';
 import { FaGithub } from "react-icons/fa";
 
 export default function Home() {
@@ -20,19 +22,16 @@ export default function Home() {
         }
     }
 
-    // const handleGoogleLogin = async () => {
-    //     try {
-    //       const { error } = await supabase.auth.signInWithOAuth({
-    //         provider: 'google',
-    //         options: {
-    //           redirectTo: `${window.location.origin}/auth/callback`,
-    //         },
-    //       })
-    //       if (error) throw error
-    //     } catch (error) {
-    //       console.error(error)
-    //     }
-    //   }
+    useEffect(() => {
+        async function fetchUser() {
+            const { data: { user } } = await supabase.auth.getUser()
+            if (user) {
+                redirect('/home')
+                return;
+            }
+        }
+        fetchUser();
+    }, []);
     
     return (
         <div className="flex flex-col min-h-screen justify-center items-center text-white relative z-10">
