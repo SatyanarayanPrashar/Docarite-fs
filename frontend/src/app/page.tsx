@@ -1,10 +1,10 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useState } from "react";
 import Link from "next/link";
 import Navbar_landing from "@/components/navbar_landing";
+import { motion } from 'framer-motion';
 
 export default function Home() {
   const [tool, setTool] = useState("README Generator");
@@ -20,6 +20,22 @@ export default function Home() {
           priority
         />
       </div>
+      <motion.div
+        className="fixed top-25 left-120 w-[32%] h-[60%] -z-10 blur-sm"
+        animate={{ y: [0, -20, 0] }} // up and down
+        transition={{
+          duration: 5,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+      >
+        <Image
+          src="/bg_logo.png"
+          alt="Background"
+          fill
+          priority
+        />
+      </motion.div>
       <h1 className="text-6xl font-extrabold text-center mt-48">Cut Code Review Time <br /> & Bugs in Half. Instantly.</h1>
       <h2 className="mt-6 text-xl text-center text-white/80">
         Supercharge your team to ship faster with the most advanced AI <br /> code reviews.
@@ -32,7 +48,7 @@ export default function Home() {
       <div className="flex flex-col gap-10 mt-32">
         {/* CARD ROW 1 */}
         <div className="flex gap-10 h-[25rem] w-[80vw]">
-          <div className="relative w-[70%] h-full flex p-12 gap-6 justify-between rounded-[2rem] border border-white/20 text-white backdrop-blur-[10px] shadow-[inset_0_0_0.5px_rgba(255,255,255,0.2),0_20px_30px_rgba(0,0,0,0.2)] bg-gradient-to-b from-white/20 to-white/5 overflow-hidden">
+          <div className="relative w-[70%] h-full flex p-12 gap-6 justify-between rounded-[2rem] border border-white/20 text-white backdrop-blur-[10px] shadow-[inset_0_0_0.5px_rgba(255,255,255,0.2),0_20px_30px_rgba(0,0,0,0.2)] bg-gradient-to-b from-white/20 to-white/5">
             <div className="absolute inset-0 pointer-events-none rounded-[2rem] bg-[radial-gradient(ellipse_at_top_left,rgba(255,255,255,0.2),transparent)]" />
             <div className="flex flex-col gap-4 w-[30%] z-10">
               <p className="text-3xl font-semibold">Tailored reviews.<br /> Every time.</p>
