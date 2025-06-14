@@ -40,7 +40,7 @@ const items = [
 export function AppSidebar() {
     const [user, setUser] = useState<any>(null)
     const router = useRouter()
-    const [loading, isLoading] = useState<boolean>(true)
+    const [loading, setLoading] = useState<boolean>(true)
 
     const handleLogout = async () => {
         await supabase.auth.signOut()
@@ -54,7 +54,7 @@ export function AppSidebar() {
                 redirect('/authentication')
             }
             setUser(user)
-            isLoading(false)
+            setLoading(false)
         }
         fetchUser();
     }, []);
@@ -66,9 +66,9 @@ export function AppSidebar() {
                     <SidebarGroup>
                         <SidebarGroupContent>
                             <SidebarMenu>
-                                <div className="flex gap-4 items-center justify-center my-4">
-                                    <FaGithub className="h-14 w-14" />
-                                    <p className="text-xl">
+                                <div className="flex gap-2 items-center justify-center my-4">
+                                    <FaGithub className="h-10 w-10 text-neutral-700" />
+                                    <p className="text-lg">
                                         {user.user_metadata.full_name.length > 24 
                                             ? `${user.user_metadata.full_name.slice(0, 24)}...` 
                                             : user.user_metadata.full_name}

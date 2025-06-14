@@ -1,6 +1,7 @@
 "use client"
 
 import { supabase } from '@/lib/supabase'
+import { motion } from 'framer-motion';
 import Image from "next/image";
 import { redirect } from 'next/navigation';
 import { useEffect } from 'react';
@@ -47,9 +48,23 @@ export default function Home() {
                     />
                     <p className="text-2xl font-bold">Docarite</p>
                 </div>
-                <p className="text-white/80 text-[1rem]">
-                    Welcome to Docarite
-                </p>
+                <motion.div
+                    className="fixed top-1/4 left-1/4 w-1/2 h-1/2 md:w-[32%] md:h-[55%] md:left-1/3 -z-10 blur-[4px]"
+                    animate={{ y: [0, -20, 0] }}
+                    transition={{
+                    duration: 5,
+                    repeat: Infinity,
+                    ease: 'easeInOut',
+                    }}
+                >
+                    <Image
+                    src="/asset2.png"
+                    alt="Background Logo"
+                    fill
+                    priority
+                    className="object-contain"
+                    />
+                </motion.div>
                 <h2 className="text-xl text-center text-white/80">
                     Supercharge your team to ship faster with the most advanced AI code reviews.
                 </h2>

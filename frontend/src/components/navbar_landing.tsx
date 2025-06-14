@@ -23,11 +23,11 @@ export default function Navbar_landing() {
                     <p className="">README Generator</p>
                 </Link>
                 <div className="flex flex-col">
-                    <p className="">AI Code Documentation</p>
+                    <p className="">Pricing</p>
                 </div>
-                <div className="flex flex-col">
-                    <p className="">API Documentation</p>
-                </div>
+                <Link href="/authentication">
+                    <p className="">Login</p>
+                </Link>
             </div>
         </div>
     );

@@ -26,7 +26,7 @@ export default function Navbar() {
                     <div className="flex gap-4">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="dropdown">Tools  <IconCaretDown/> </Button>
+                                <Button >Tools  <IconCaretDown/> </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent className="w-78">
                                 <DropdownMenuItem>
