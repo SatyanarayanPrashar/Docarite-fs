@@ -17,3 +17,6 @@ node_modules/
 backend/clone_repos/
 backend/output/
 backend/file_structure.txt
+
+backend/.env
+backend/prreviewer/docarite.2025-06-14.private-key.pem

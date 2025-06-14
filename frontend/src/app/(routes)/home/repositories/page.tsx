@@ -15,6 +15,7 @@ import { Switch } from "@/components/ui/switch"
 import { Skeleton } from "@/components/ui/skeleton"
 import Link from "next/link"
 import { GithubRepo } from "@/types/githube_types"
+import { redirect, useRouter } from 'next/navigation'
 
 const GITHUB_APP_INSTALL_URL = "https://github.com/apps/docarite/installations/new";
 
@@ -52,17 +53,19 @@ export default function HomePage() {
     const [repos, setRepos] = useState<GithubRepo[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+    const router = useRouter();
 
     const fetchRepos = useCallback(async () => {
         setLoading(true);
         setError(null);
-
         try {
             const { data: { session } } = await supabase.auth.getSession();
+            console.log("Session data:", session);
             const githubToken = session?.provider_token;
 
             if (!githubToken) {
-                throw new Error("No GitHub token found. Please re-authenticate.");
+                await supabase.auth.signOut();
+                redirect('/authentication');
             }
 
             const installationsRes = await fetch("https://api.github.com/user/installations", {
