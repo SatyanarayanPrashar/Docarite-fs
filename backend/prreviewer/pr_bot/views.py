@@ -31,7 +31,6 @@ def install_callback(request):
 
     return redirect(f"http://localhost:3000/home/repositories?installation_id={installation_id}")
 
-
 @csrf_exempt
 def github_webhook(request):
     secret = b'mysecret123'
