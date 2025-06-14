@@ -2,68 +2,21 @@
 
 import { useEffect, useState, useCallback } from "react"
 import { supabase } from "@/lib/supabase"
-import { CirclePlus, Bolt, Link as LinkIcon } from "lucide-react"
-import { FaGithub } from "react-icons/fa"
+import { CirclePlus } from "lucide-react"
 import {
     Table,
     TableBody,
-    TableCell,
     TableHead,
     TableHeader,
-    TableRow
+    TableRow,
+    RepoRow
 } from "@/components/ui/table"
 import { Switch } from "@/components/ui/switch"
 import { Skeleton } from "@/components/ui/skeleton"
 import Link from "next/link"
-
-interface GithubRepo {
-    id: number;
-    full_name: string;
-    private: boolean;
-    html_url: string;
-    active: boolean;
-}
+import { GithubRepo } from "@/types/githube_types"
 
 const GITHUB_APP_INSTALL_URL = "https://github.com/apps/docarite/installations/new";
-
-const RepoRow = ({ repo }: { repo: GithubRepo }) => {
-    const [isActive, setIsActive] = useState(repo.active);
-
-    const handleToggle = () => {
-        setIsActive(prevState => !prevState);
-    };
-
-    return (
-        <TableRow>
-            <TableCell className="font-medium">
-                <div className="flex items-center gap-4">
-                    <span>{repo.full_name}</span>
-                    <span className={`py-0.5 px-2.5 text-xs font-semibold border rounded-full ${repo.private ? "bg-gray-100 text-gray-800 border-gray-300" : "bg-green-100 text-green-800 border-green-300"}`}>
-                        {repo.private ? "Private" : "Public"}
-                    </span>
-                </div>
-            </TableCell>
-            <TableCell>
-                <a href={repo.html_url} target="_blank" rel="noopener noreferrer" className="text-neutral-500 hover:text-neutral-900 transition-colors">
-                    <FaGithub size={20} />
-                </a>
-            </TableCell>
-            <TableCell>
-                <button className="text-neutral-500 hover:text-neutral-900 transition-colors" aria-label="Settings">
-                    <Bolt size={20} />
-                </button>
-            </TableCell>
-            <TableCell>
-                <Switch
-                    id={`active-${repo.id}`}
-                    checked={isActive}
-                    onCheckedChange={handleToggle}
-                    aria-label={`Activate ${repo.full_name}`}
-                />
-            </TableCell>
-        </TableRow>
-    );
-};
 
 const AddRepoButton = () => (
     <a href={GITHUB_APP_INSTALL_URL} className="px-5 h-[40px] rounded-md text-white bg-blue-600 hover:bg-blue-700 flex gap-2 items-center transition-colors shadow-sm">
