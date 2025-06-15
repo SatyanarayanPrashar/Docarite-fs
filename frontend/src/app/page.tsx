@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Navbar_landing from "@/components/navbar_landing";
 import { motion } from 'framer-motion';
+import Footer_landing from "@/components/footer";
 
 export default function Home() {
 
@@ -20,7 +21,7 @@ export default function Home() {
         />
       </div>
       <motion.div
-        className="fixed top-1/4 left-1/4 w-1/2 h-1/2 md:w-[32%] md:h-[55%] md:left-1/3 -z-10 blur-sm"
+        className="fixed top-[17%] left-1/4 w-1/2 h-1/2 md:w-[32%] md:h-[55%] md:left-1/3 -z-10 blur-sm"
         animate={{ y: [0, -20, 0] }}
         transition={{
           duration: 5,
@@ -36,7 +37,7 @@ export default function Home() {
           className="object-contain"
         />
       </motion.div>
-      <div className="w-full px-4 sm:px-6 lg:px-8">
+      <div className="w-full px-4 sm:px-6 lg:px-8 flex flex-col items-center">
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-center mt-32 sm:mt-40 md:mt-48">Cut Code Review Time <br className="hidden sm:block" /> & Bugs in Half. Instantly.</h1>
         <h2 className="mt-6 text-lg sm:text-xl text-center text-white/80 max-w-3xl mx-auto">
           Supercharge your team to ship faster with the most advanced AI code reviews.
@@ -48,7 +49,18 @@ export default function Home() {
           </Link>
         </div>
 
-        <div className="flex flex-col gap-10 mt-24 sm:mt-36 max-w-7xl mx-auto">
+        {/* <div className="relative h-[37rem] rounded-lg overflow-hidden bg-red-400 mt-24 sm:mt-36 w-5xl">
+          <Image
+            src="/demo.png"
+            alt="Background"
+            fill
+            priority
+          />
+        </div> */}
+
+        <p className="text-4xl font-bold mt-24 sm:mt-36">AI Code Reviews</p>
+
+        <div className="flex flex-col gap-10 mt-7 sm:mt-13 max-w-7xl mx-auto">
           <div className="flex flex-col lg:flex-row gap-10">
             <div className="relative w-full lg:w-[70%] h-auto lg:h-[25rem] flex flex-col md:flex-row p-8 sm:p-12 gap-6 justify-between rounded-[2rem] border border-white/20 text-white backdrop-blur-[10px] shadow-[inset_0_0_0.5px_rgba(255,255,255,0.2),0_20px_30px_rgba(0,0,0,0.2)] bg-gradient-to-b from-white/20 to-white/5">
               <div className="absolute inset-0 pointer-events-none rounded-[2rem] bg-[radial-gradient(ellipse_at_top_left,rgba(255,255,255,0.2),transparent)]" />
@@ -61,8 +73,8 @@ export default function Home() {
               <div className="relative w-full md:w-[60%] h-64 md:h-full z-10 mt-6 md:mt-0">
                 <Image
                   className="rounded-2xl object-cover"
-                  src="/readme.png"
-                  alt="Readme Preview"
+                  src="/demo.png"
+                  alt="Demo Preview"
                   fill
                 />
               </div>
@@ -76,7 +88,7 @@ export default function Home() {
                   Context-aware reviews and instant fixes help catch issues earlier and ship confidently.
                 </p>
               </div>
-              <Image src="/readme.png" alt="Readme Preview" width={300} height={180} className="rounded-xl object-cover w-full h-auto self-center mt-4 z-10" />
+              <Image src="/asset1.png" alt="Readme Preview" width={150} height={150} className="object-cover w-[70%] h-auto self-center z-10" />
             </div>
           </div>
 
@@ -122,8 +134,8 @@ export default function Home() {
               <div className="relative w-full md:w-[60%] h-64 md:h-full z-10 mt-6 md:mt-0">
                 <Image
                   className="rounded-2xl object-cover"
-                  src="/readme.png"
-                  alt="Readme Preview"
+                  src="/demo.png"
+                  alt="Demo Preview"
                   fill
                 />
               </div>
@@ -141,6 +153,8 @@ export default function Home() {
             </div>
           </div>
         </div>
+
+        <Footer_landing />
       </div>
     </div>
   );
