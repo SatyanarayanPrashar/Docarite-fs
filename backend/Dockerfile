@@ -10,7 +10,7 @@ RUN pip install pipenv
 COPY Pipfile Pipfile.lock /app/
 
 # Install dependencies using Pipenv
-RUN pipenv install --deploy --ignore-pipfile
+RUN pipenv install
 
 # Copy your Django project
 COPY . .
