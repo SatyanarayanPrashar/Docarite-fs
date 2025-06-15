@@ -1,6 +1,7 @@
 "use client"
 import { Home, ClipboardList, Bolt, LogOutIcon } from "lucide-react"
 import Image from "next/image";
+import { User } from '@supabase/supabase-js'
 
 import {
     Sidebar,
@@ -38,7 +39,7 @@ const items = [
 ]
 
 export function AppSidebar() {
-    const [user, setUser] = useState<any>(null)
+    const [user, setUser] = useState<User | null>(null)
     const router = useRouter()
     const [loading, setLoading] = useState<boolean>(true)
 
@@ -69,9 +70,9 @@ export function AppSidebar() {
                                 <div className="flex gap-2 items-center justify-center my-4">
                                     <FaGithub className="h-10 w-10 text-neutral-700" />
                                     <p className="text-lg">
-                                        {user.user_metadata.full_name.length > 24 
-                                            ? `${user.user_metadata.full_name.slice(0, 24)}...` 
-                                            : user.user_metadata.full_name}
+                                        {user?.user_metadata.full_name.length > 24 
+                                            ? `${user?.user_metadata.full_name.slice(0, 24)}...` 
+                                            : user?.user_metadata.full_name}
                                     </p>
                                 </div>
                                 <Separator className="mb-4" />
@@ -91,7 +92,7 @@ export function AppSidebar() {
                 </SidebarContent>
                 <div className="p-2 flex items-center gap-3 border m-2 rounded-lg">
                     <Image
-                        src={user.user_metadata.avatar_url}
+                        src={user?.user_metadata.avatar_url}
                         alt="Profile"
                         width={42}
                         height={42}
@@ -100,9 +101,9 @@ export function AppSidebar() {
                     <div className="flex-1 flex flex-col justify-between">
                         <div className="flex justify-between">
                             <p className="font-medium truncate">
-                                {user.user_metadata.full_name.length > 14 
-                                    ? `${user.user_metadata.full_name.slice(0, 14)}...` 
-                                    : user.user_metadata.full_name}
+                                {user?.user_metadata.full_name.length > 14 
+                                    ? `${user?.user_metadata.full_name.slice(0, 14)}...` 
+                                    : user?.user_metadata.full_name}
                             </p>
                             <button
                                 onClick={handleLogout}

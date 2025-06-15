@@ -11,11 +11,9 @@ import {
     TableRow,
     RepoRow
 } from "@/components/ui/table"
-import { Switch } from "@/components/ui/switch"
 import { Skeleton } from "@/components/ui/skeleton"
-import Link from "next/link"
 import { GithubRepo } from "@/types/githube_types"
-import { redirect, useRouter } from 'next/navigation'
+import { redirect } from 'next/navigation'
 
 const GITHUB_APP_INSTALL_URL = "https://github.com/apps/docarite/installations/new";
 
@@ -31,7 +29,7 @@ const EmptyState = () => (
         <div className="absolute inset-0 pointer-events-none rounded-lg bg-[radial-gradient(ellipse_at_center,rgba(200,200,255,0.1),transparent)]" />
         <h3 className="text-xl font-semibold text-neutral-800">No Repositories Found</h3>
         <p className="text-neutral-600 max-w-md">
-            Docarite currently doesn't have access to any repositories for this account. Please install the Docarite GitHub App and grant access to the repositories you want to work with.
+            Docarite currently doesn&apos;t have access to any repositories for this account. Please install the Docarite GitHub App and grant access to the repositories you want to work with.
         </p>
         <div className="mt-2">
             <AddRepoButton />
@@ -53,7 +51,6 @@ export default function HomePage() {
     const [repos, setRepos] = useState<GithubRepo[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
-    const router = useRouter();
 
     const fetchRepos = useCallback(async () => {
         setLoading(true);
@@ -83,7 +80,7 @@ export default function HomePage() {
                  return;
             }
 
-            const repoPromises = installationsData.installations.map(async (installation: any) => {
+            const repoPromises = installationsData.installations.map(async (installation: { id: number }) => {
                 const reposRes = await fetch(`https://api.github.com/user/installations/${installation.id}/repositories`, {
                     headers: {
                         Authorization: `Bearer ${githubToken}`,
@@ -96,12 +93,17 @@ export default function HomePage() {
             });
 
             const allReposArrays = await Promise.all(repoPromises);
-            const allRepos = allReposArrays.flat().map((repo: any) => ({ ...repo, active: true }));
+            const allRepos = allReposArrays.flat().map((repo: GithubRepo) => ({ ...repo, active: true }));
 
             setRepos(allRepos);
-        } catch (err: any) {
-            setError(err.message || "An unexpected error occurred.");
-            console.error(err);
+        } catch (err) {
+            if (err instanceof Error) {
+                setError(err.message);
+                console.error(err);
+            } else {
+                setError("An unexpected error occurred.");
+                console.error(err);
+            }
         } finally {
             setLoading(false);
         }

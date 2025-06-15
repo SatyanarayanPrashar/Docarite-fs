@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "Docarite",
