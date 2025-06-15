@@ -104,7 +104,7 @@ export default function Home() {
                 <div className="relative w-full md:w-[60%] h-64 md:h-full z-10 mt-6 md:mt-0">
                     <Image
                         className="rounded-2xl object-cover"
-                        src="/readme.png"
+                        src="/demo.png"
                         alt="Readme Preview"
                         fill
                     />
@@ -118,7 +118,7 @@ export default function Home() {
                     See the list of changed files and a one-line description.
                     </p>
                 </div>
-                <Image src="/readme.png" alt="Readme Preview" width={300} height={180} className="rounded-xl object-cover w-full h-auto self-center mt-4 z-10" />
+                <Image src="/demo.png" alt="Readme Preview" width={300} height={180} className="rounded-xl object-cover w-full h-auto self-center mt-4 z-10" />
             </div>
           </div>
           
@@ -143,7 +143,7 @@ export default function Home() {
 
             <div className="relative w-full lg:w-[30%] h-auto lg:h-[30rem] flex p-8 sm:p-10 flex-col gap-4 justify-between rounded-[2rem] border border-white/20 text-white backdrop-blur-[10px] shadow-[inset_0_0_0.5px_rgba(255,255,255,0.2),0_20px_30px_rgba(0,0,0,0.2)] bg-gradient-to-b from-white/20 to-white/5 overflow-hidden">
               <div className="absolute inset-0 pointer-events-none rounded-[2rem] bg-[radial-gradient(ellipse_at_top_left,rgba(255,255,255,0.15),transparent)]" />
-              <Image src="/readme.png" alt="Readme Preview" width={300} height={180} className="rounded-xl object-cover w-full h-auto self-start z-10" />
+              <Image src="/demo.png" alt="Readme Preview" width={300} height={180} className="rounded-xl object-cover w-full h-auto self-start z-10" />
               <div className="flex flex-col gap-2 z-10">
                 <p className="text-2xl font-semibold">More signal. Less noise.</p>
                 <p className="text-white/80">
