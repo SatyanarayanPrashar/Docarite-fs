@@ -1,34 +1,81 @@
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function Navbar_landing() {
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+    const navLinks = [
+        { href: "/readme-generator", text: "README Generator" },
+        { href: "/pricing", text: "Pricing" },
+        { href: "/authentication", text: "Login" },
+    ];
+
     return (
-        <div className="fixed top-1 z-50 w-2/3 mt-8 flex justify-between items-center px-8 py-4 rounded-full border border-white/30 text-white backdrop-blur-md shadow-xl bg-gradient-to-b from-white/10 to-white/5">
-            <Link href="/">
-                <div className="flex gap-2 items-center">
-                    <Image
-                        className=""
-                        src="/logo_no_name.png"
-                        alt="Next.js logo"
-                        width={25}
-                        height={10}
-                        priority
-                    />
-                    <p>Docarite</p>
+        <>
+            <div className="fixed top-4 left-1/2 z-50 w-[94%] -translate-x-1/2 rounded-full border border-white/30 bg-gradient-to-b from-white/10 to-white/5 px-6 py-3 text-white backdrop-blur-xl md:w-2/3 md:px-8">
+                <div className="flex items-center justify-between content-center">
+                    <Link href="/" className="flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+                        <Image
+                            src="/logo_no_name.png"
+                            alt="Logo"
+                            width={25}
+                            height={25}
+                            priority
+                        />
+                        <p className="font-semibold tracking-wider">Docarite</p>
+                    </Link>
+
+                    <nav className="hidden items-center gap-8 md:flex">
+                        {navLinks.map((link) => (
+                            <Link key={link.href} href={link.href} className="text-sm transition-colors hover:text-white/80">
+                                {link.text}
+                            </Link>
+                        ))}
+                    </nav>
+
+                    <div className="flex items-center justify-center md:hidden">
+                        <button
+                            onClick={() => setIsMenuOpen(!isMenuOpen)}
+                            className="relative w-8 text-white mt-4"
+                            aria-label="Toggle Menu"
+                        >
+                            <div className="absolute top-1/2 left-1/2 h-5 w-6 -translate-x-1/2 -translate-y-1/2 transform">
+                                <span
+                                    className={`absolute block h-0.5 w-full transform bg-current transition-transform duration-300 ease-in-out ${
+                                        isMenuOpen ? "rotate-45" : "-translate-y-2"
+                                    }`}
+                                ></span>
+                                <span
+                                    className={`absolute block h-0.5 w-full transform bg-current transition-opacity duration-300 ease-in-out ${
+                                        isMenuOpen ? "opacity-0" : ""
+                                    }`}
+                                ></span>
+                                <span
+                                    className={`absolute block h-0.5 w-full transform bg-current transition-transform duration-300 ease-in-out ${
+                                        isMenuOpen ? "-rotate-45" : "translate-y-2"
+                                    }`}
+                                ></span>
+                            </div>
+                        </button>
+                    </div>
                 </div>
-            </Link>
-            <div className="flex gap-4">
-                <Link href="/readme-generator">
-                    <p className="">README Generator</p>
-                </Link>
-                <div className="flex flex-col">
-                    <p className="">Pricing</p>
-                </div>
-                <Link href="/authentication">
-                    <p className="">Login</p>
-                </Link>
             </div>
-        </div>
+
+            {isMenuOpen && (
+                <div
+                    className="fixed top-20 z-40 w-[94%] left-1/2 -translate-x-1/2 rounded-2xl border border-white/30 bg-black/40 p-4 backdrop-blur-xl md:hidden"
+                    onClick={() => setIsMenuOpen(false)}
+                >
+                    <nav className="flex flex-col items-center gap-4">
+                        {navLinks.map((link) => (
+                            <Link key={link.href} href={link.href} className="w-full py-2 text-center">
+                                {link.text}
+                            </Link>
+                        ))}
+                    </nav>
+                </div>
+            )}
+        </>
     );
 }
