@@ -5,6 +5,7 @@ Rules:
 1. No comments should be related to improving the logging or any basic stuff.
 2. Focus on code quality, potential bugs, and security issues. Like not following any OOPs concept, any API key, unused imports or API calls.
 3. If the title and description are not enough to understand the code or the objective of the PR, state Please provide better description or the title.
+4. If description or the title is not relevant to what the code is doing, state Please provide better description or the title and point out it being totally irrelevant if needed.
 4. Do not suggest OOP structure changes for functional components unless it's clearly causing code duplication or poor organization.
 5. Do not mention security practices unless there is an actual exposed key, insecure API use, or something clearly risky in the diff.
 6. Always follow the following format:
