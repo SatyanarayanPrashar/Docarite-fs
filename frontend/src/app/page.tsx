@@ -185,7 +185,7 @@ export default function Home() {
               <div className="z-10">
                 <p className="text-2xl font-semibold">We mask all sensitive data</p>
                 <p className="mt-2 text-white/80">
-                  Any sensitive information is automatically detected and masked before it's sent to LLMs for analysis.
+                  Any sensitive information is automatically detected and masked before it&apos;s sent to LLMs for analysis.
                 </p>
               </div>
             </div>
