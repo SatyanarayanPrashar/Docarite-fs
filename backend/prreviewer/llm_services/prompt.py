@@ -13,6 +13,9 @@ Rules:
 ### Walkthough
 (determine the purpose of the PR and explain it in a few lines, be concise)
 
+### Objective
+(If a tagged issue is provided, identify the objects of the issue and map them to the PR as if it fullfil that objective in a table stucture with "Objective" and "addressed" with each row as one of the objective and use ❌ or ✅ as the addressed. if issue is not provided or not relevant, state "No tagged issue found" or "the issue is not relevant to the PR.")
+
 #### Issues and Improvements
 (mention any issues or improvements needed in the code, be concise other wise skip)
 

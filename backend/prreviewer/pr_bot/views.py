@@ -1,4 +1,5 @@
 # views.py
+import re
 from django.http import JsonResponse
 from django.shortcuts import redirect
 import hmac, hashlib, json
@@ -15,6 +16,7 @@ from llm_services.llm_call import analyse_pr
 load_dotenv()
 from pathlib import Path
 
+GITHUB_INSTALLATION_REDIRECT_URL = os.getenv("GITHUB_INSTALLATION_REDIRECT_URL")
 APP_ID = os.getenv("GITHUB_APP_ID")
 BASE_DIR = Path(__file__).resolve().parent.parent
 PEM_PATH = BASE_DIR / 'docarite.2025-06-14.private-key.pem'
@@ -29,7 +31,7 @@ def install_callback(request):
     # Save this installation ID to DB or link to the logged-in user
     print(f"Installation complete with ID: {installation_id}, action: {setup_action}")
 
-    return redirect(f"https://docarite.com/home/repositories?installation_id={installation_id}")
+    return redirect(f"{GITHUB_INSTALLATION_REDIRECT_URL}?installation_id={installation_id}")
 
 logger = logging.getLogger(__name__)
 
@@ -78,6 +80,9 @@ def github_webhook(request):
             "iss": APP_ID
         }
 
+        pr_body = payload["pull_request"].get("body", "")
+        linked_issues = re.findall(r"(?:Issue|Fixes|Closes|Resolves)[:\s]*#(\d+)", pr_body, re.IGNORECASE)
+
         try:
             jwt_token = jwt.encode(payload_jwt, PRIVATE_KEY, algorithm="RS256")
         except Exception as e:
@@ -103,6 +108,13 @@ def github_webhook(request):
             logger.error("Invalid JSON response when fetching access token")
             return JsonResponse({"error": "Invalid JSON response"}, status=502)
 
+        issue_info = None
+        if linked_issues:
+            issue_number_linked = linked_issues[0]
+            issue_info = fetch_linked_issue(repo, issue_number_linked, access_token)
+        else:
+            logger.info("No linked issues found in PR description.")
+
         comment_url = f"https://api.github.com/repos/{repo}/issues/{issue_number}/comments"
         comment_headers = {
             "Authorization": f"token {access_token}",
@@ -110,7 +122,7 @@ def github_webhook(request):
         }
 
         try:
-            comment_text = analyse_pr(payload, access_token) or "Thank you for your contribution 🚀!"
+            comment_text = analyse_pr(payload, access_token, issue_info) or "Thank you for your contribution 🚀!"
         except Exception as e:
             logger.error(f"Error analysing PR: {e}")
             comment_text = "Thank you for your contribution 🚀!"
@@ -126,3 +138,38 @@ def github_webhook(request):
             return JsonResponse({"error": "Failed to post comment"}, status=502)
 
     return JsonResponse({"status": "ok"})
+
+import requests
+
+def fetch_linked_issue(repo_full_name, issue_number, access_token):
+    """
+    Fetch issue details from a GitHub repository.
+
+    Args:
+        repo_full_name (str): The full repo name (e.g. "owner/repo")
+        issue_number (str or int): The issue number to fetch
+        access_token (str): GitHub access token (installation token)
+
+    Returns:
+        dict: Parsed issue data (title, body, state, etc.)
+        None: If fetch fails
+    """
+    issue_url = f"https://api.github.com/repos/{repo_full_name}/issues/{issue_number}"
+    headers = {
+        "Authorization": f"token {access_token}",
+        "Accept": "application/vnd.github+json"
+    }
+
+    try:
+        response = requests.get(issue_url, headers=headers)
+        response.raise_for_status()
+        issue_data = response.json()
+        return {
+            "title": issue_data.get("title"),
+            "body": issue_data.get("body"),
+            "state": issue_data.get("state"),
+            "url": issue_data.get("html_url"),
+        }
+    except requests.RequestException as e:
+        logger.error(f"Failed to fetch issue #{issue_number}: {e}")
+        return None

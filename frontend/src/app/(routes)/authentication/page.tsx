@@ -14,7 +14,7 @@ export default function Home() {
           const { error } = await supabase.auth.signInWithOAuth({
             provider: 'github',
             options: {
-              redirectTo: `${window.location.origin}/auth/callback`,
+              redirectTo: `${process.env.CALLBACK_URL} || ${window.location.origin}/auth/callback`,
             },
           })
           if (error) throw error
@@ -28,7 +28,6 @@ export default function Home() {
             const { data: { user } } = await supabase.auth.getUser()
             if (user) {
                 redirect('/home')
-                return;
             }
         }
         fetchUser();

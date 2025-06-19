@@ -9,10 +9,14 @@ load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=OPENAI_API_KEY)
 
-def analyse_pr(payload, access_token):
+def analyse_pr(payload, access_token, issue_info=None):
     pr_title = payload["pull_request"]["title"]
     pr_body = payload["pull_request"]["body"] or ""
     pr_url = payload["pull_request"]["url"]
+
+    issue_body = "No tagged issue"
+    if issue_info is not None:
+        issue_body = issue_info.get("body", "")
 
     #Get the files changed in the PR
     files_url = pr_url + "/files"
@@ -28,7 +32,7 @@ def analyse_pr(payload, access_token):
 
         # Get only the patch from first few files (limiting for token usage)
         patches = []
-        for file in files_changed[:3]:  # limit to 3 files
+        for file in files_changed[:4]:
             filename = file.get("filename", "")
             patch = file.get("patch")
             if patch:
@@ -40,7 +44,6 @@ def analyse_pr(payload, access_token):
         print(f"Error fetching file diffs: {e}")
         return None
 
-    # Format messages for GPT-4o-mini
     messages = [
         {
             "role": "system",
@@ -48,7 +51,7 @@ def analyse_pr(payload, access_token):
         },
         {
             "role": "user",
-            "content": f"Title: {pr_title}\n\nDescription: {pr_body}\n\nChanges:\n{code_changes}"
+            "content": f"Title: {pr_title}\n\nDescription: {pr_body}\n\nChanges:\n{code_changes}\n\nTagged Issue: {issue_body}"
         }
     ]
 
