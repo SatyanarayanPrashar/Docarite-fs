@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 import jwt
 import requests
 import logging
+from webhook_handlers.github_authenticator import EventParser, GitHubAuthenticator, SignatureValidator
 from llm_services.llm_call import analyse_pr
 
 load_dotenv()
@@ -26,84 +27,77 @@ with open(PEM_PATH, 'r') as f:
 
 logger = logging.getLogger(__name__)
 
+
 class GitHubWebhookHandler:
     def __init__(self, request):
         self.request = request
         self.secret = b'mysecret123'
-        self.jwt_token = None
-        self.access_token = None
-        self.payload = None
-        self.event = None
-        self.repo = None
-        self.pr_number = None
-        self.installation_id = None
+        self.parser = EventParser(request)
+        self.validator = SignatureValidator(request, self.secret)
+        self.auth = GitHubAuthenticator(APP_ID, PRIVATE_KEY)
 
     def handle(self):
-        if not self._is_valid_signature():
+        if not self.validator.is_valid():
             return HttpResponseForbidden("Invalid or missing signature")
 
-        if not self._parse_event_payload():
+        event, payload = self.parser.parse()
+        if not event or not payload:
             return JsonResponse({"error": "Invalid payload"}, status=400)
 
-        if self.event == "pull_request" and self.payload.get("action") in ["opened", "reopened"]:
-            return self._handle_pull_request()
+        if event == "pull_request" and payload.get("action") in ["opened", "reopened"]:
+            return self.handle_pull_request(payload)
 
         return JsonResponse({"status": "ok"})
 
-    def _is_valid_signature(self):
-        signature = self.request.headers.get('X-Hub-Signature-256')
-        if not signature:
-            logger.warning("Request rejected: Signature missing")
-            return False
+    def handle_pull_request(self, payload):
         try:
-            computed_sig = 'sha256=' + hmac.new(self.secret, self.request.body, hashlib.sha256).hexdigest()
-            if not hmac.compare_digest(signature, computed_sig):
-                logger.warning("Request rejected: Signature mismatch")
-                return False
-        except Exception as e:
-            logger.error(f"Error validating signature: {e}")
-            return False
-        return True
+            repo = payload["repository"]["full_name"]
+            pr_number = payload["pull_request"]["number"]
+            installation_id = payload["installation"]["id"]
+        except KeyError as e:
+            logger.error(f"Missing key in payload: {e}")
+            return JsonResponse({"error": f"Missing key {e}"}, status=400)
 
-    def _parse_event_payload(self):
+        jwt_token = self.auth.create_jwt()
+        if not jwt_token:
+            return JsonResponse({"error": "JWT creation failed"}, status=500)
+
+        access_token = self.auth.get_installation_token(jwt_token, installation_id)
+        if not access_token:
+            return JsonResponse({"error": "Access token missing"}, status=502)
+
+        pr_body = payload["pull_request"].get("body", "")
+        linked_issues = re.findall(r"(?:Issue|Fixes|Closes|Resolves)[:\s]*#(\d+)", pr_body, re.IGNORECASE)
+
+        issue_info = None
+        if linked_issues:
+            issue_info = self.fetch_linked_issue(repo, linked_issues[0], access_token)
+
         try:
-            self.event = self.request.headers.get("X-GitHub-Event", "")
-            self.payload = json.loads(self.request.body)
-            return True
+            comment_text = analyse_pr(payload, access_token, issue_info) or "Thank you for your contribution 🚀!"
         except Exception as e:
-            logger.error(f"Error parsing payload: {e}")
-            return False
+            logger.error(f"Error analysing PR: {e}")
+            comment_text = "Thank you for your contribution 🚀!"
 
-    def _create_jwt(self):
-        now = int(time.time())
-        payload = {
-            "iat": now,
-            "exp": now + 540,
-            "iss": APP_ID
-        }
-        try:
-            self.jwt_token = jwt.encode(payload, PRIVATE_KEY, algorithm="RS256")
-        except Exception as e:
-            logger.error(f"JWT encoding failed: {e}")
-            return False
-        return True
+        return self.post_comment(repo, pr_number, access_token, comment_text)
 
-    def _get_access_token(self):
+    def post_comment(self, repo, pr_number, access_token, text):
+        url = f"https://api.github.com/repos/{repo}/issues/{pr_number}/comments"
         headers = {
-            "Authorization": f"Bearer {self.jwt_token}",
+            "Authorization": f"token {access_token}",
             "Accept": "application/vnd.github+json"
         }
         try:
-            url = f"https://api.github.com/app/installations/{self.installation_id}/access_tokens"
-            res = requests.post(url, headers=headers)
+            res = requests.post(url, headers=headers, json={"body": text})
             res.raise_for_status()
-            self.access_token = res.json().get("token")
-            return self.access_token is not None
+            logger.info("Comment posted successfully")
+            return JsonResponse({"status": "commented"})
         except Exception as e:
-            logger.error(f"Failed to get access token: {e}")
-            return False
+            logger.error(f"Failed to post comment: {e}")
+            return JsonResponse({"error": "Failed to post comment"}, status=502)
 
-    def _handle_pull_request(self):
+
+
         try:
             self.repo = self.payload["repository"]["full_name"]
             self.pr_number = self.payload["pull_request"]["number"]
@@ -159,26 +153,3 @@ class GitHubWebhookHandler:
         except requests.RequestException as e:
             logger.error(f"Failed to fetch issue #{issue_number}: {e}")
             return None
-
-    def _fetch_issue_info(self):
-        pr_body = self.payload["pull_request"].get("body", "")
-        linked_issues = re.findall(r"(?:Issue|Fixes|Closes|Resolves)[:\s]*#(\d+)", pr_body, re.IGNORECASE)
-        if not linked_issues:
-            logger.info("No linked issues found in PR description.")
-            return None
-        return self.fetch_linked_issue(self.repo, linked_issues[0], self.access_token)
-
-    def _post_comment(self, text):
-        url = f"https://api.github.com/repos/{self.repo}/issues/{self.pr_number}/comments"
-        headers = {
-            "Authorization": f"token {self.access_token}",
-            "Accept": "application/vnd.github+json"
-        }
-        try:
-            res = requests.post(url, headers=headers, json={"body": text})
-            res.raise_for_status()
-            logger.info("Comment posted successfully")
-            return JsonResponse({"status": "commented"})
-        except Exception as e:
-            logger.error(f"Failed to post comment: {e}")
-            return JsonResponse({"error": "Failed to post comment"}, status=502)
