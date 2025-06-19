@@ -49,7 +49,7 @@ class GitHubWebhookHandler:
             return self.handle_pull_request(payload)
         elif event == "pull_request" and payload.get("action") == "synchronize":
             print("0")
-            return self.handle_comment_changes(payload)
+            return self.process_commit_feedback(payload)
 
         return JsonResponse({"status": "ok"})
 
@@ -158,7 +158,7 @@ class GitHubWebhookHandler:
             logger.error(f"Failed to fetch issue #{issue_number}: {e}")
             return None
 
-    def handle_comment_changes(self, payload):
+    def process_commit_feedback(self, payload):
         repo = payload["repository"]["full_name"]
         pr_number = payload["pull_request"]["number"]
         installation_id = payload["installation"]["id"]
@@ -182,7 +182,9 @@ class GitHubWebhookHandler:
         comment_url = f"https://api.github.com/repos/{repo}/issues/{pr_number}/comments"
         comment_res = requests.get(comment_url, headers=headers)
         comments = comment_res.json()
-        bot_comments = [c for c in comments if c["user"]["type"] == "Bot" and "docarite" in c["user"]["login"]]
+
+        bot_name = "docarite"
+        bot_comments = [c for c in comments if c["user"]["type"] == "Bot" and bot_name in c["user"]["login"]]
         last_comment = bot_comments[-1]["body"] if bot_comments else ""
 
         # Analyse and post updated comment

@@ -104,7 +104,6 @@ class LLM_Services:
                 model="gpt-4o-mini",
                 messages=messages,
             )
-            print("6")
             return completion.choices[0].message.content
 
         except Exception as e:
