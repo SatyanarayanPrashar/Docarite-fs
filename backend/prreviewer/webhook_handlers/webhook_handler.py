@@ -1,14 +1,8 @@
-# views.py
 import re
 from django.http import JsonResponse
-from django.shortcuts import redirect
-import hmac, hashlib, json
-from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponseForbidden
-import time
 import os
 from dotenv import load_dotenv
-import jwt
 import requests
 import logging
 from webhook_handlers.github_authenticator import EventParser, GitHubAuthenticator, SignatureValidator
@@ -19,8 +13,10 @@ from pathlib import Path
 
 GITHUB_INSTALLATION_REDIRECT_URL = os.getenv("GITHUB_INSTALLATION_REDIRECT_URL")
 APP_ID = os.getenv("GITHUB_APP_ID")
+PVT_KEY = os.getenv("PVT_KEY")
+GIT_SECRET_KEY = os.getenv("GIT_SECRET_KEY")
 BASE_DIR = Path(__file__).resolve().parent.parent
-PEM_PATH = BASE_DIR / 'docarite.2025-06-14.private-key.pem'
+PEM_PATH = BASE_DIR / PVT_KEY
 
 with open(PEM_PATH, 'r') as f:
     PRIVATE_KEY = f.read()
@@ -31,7 +27,7 @@ logger = logging.getLogger(__name__)
 class GitHubWebhookHandler:
     def __init__(self, request):
         self.request = request
-        self.secret = b'mysecret123'
+        self.secret = GIT_SECRET_KEY.encode() if GIT_SECRET_KEY else b"default_fallback_secret"
         self.parser = EventParser(request)
         self.validator = SignatureValidator(request, self.secret)
         self.auth = GitHubAuthenticator(APP_ID, PRIVATE_KEY)
