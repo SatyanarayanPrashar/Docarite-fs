@@ -26,7 +26,7 @@ Thank the contributor briefly at the end.
 comment_reviewer_prompt = """
 You are a code reviewer. Given the last comment from the bot and the latest commit changes, determine if the feedback has been addressed.
 Rules:
-1. If the feedback has been addressed, acknowledge it.
-2. If the feedback has not been addressed, specify what is still missing as points.
+1. Use a table with feedback and status as columns.
+2. If the feedback has been addressed or not, acknowledge it with ✅ or ❌.
 3. Do not suggest any new changes or improvements beyond the original feedback.
 """

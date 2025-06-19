@@ -1,3 +1,4 @@
+import logging
 import os
 import requests
 from openai import OpenAI
@@ -8,6 +9,7 @@ load_dotenv()
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=OPENAI_API_KEY)
+logger = logging.getLogger(__name__)
 
 class LLM_Services:
 
@@ -42,7 +44,7 @@ class LLM_Services:
             code_changes = "\n\n".join(patches)
 
         except Exception as e:
-            print(f"Error fetching file diffs: {e}")
+            logger.error(f"Error fetching file diffs: {e}")
             return None
 
         messages = [
@@ -65,7 +67,7 @@ class LLM_Services:
             return completion.choices[0].message.content
 
         except Exception as e:
-            print(f"Error from OpenAI: {e}")
+            logger.error(f"Error from OpenAI: {e}")
             return None
 
     @staticmethod
@@ -93,8 +95,6 @@ class LLM_Services:
                     f"{last_comment}\n\n"
                     f"And here are the latest code changes from the most recent commit:\n\n"
                     f"{code_changes}\n\n"
-                    f"Check if the feedback has been addressed. If yes, acknowledge it. "
-                    f"If not, specify what is still missing."
                 )
             }
         ]
@@ -107,5 +107,5 @@ class LLM_Services:
             return completion.choices[0].message.content
 
         except Exception as e:
-            print(f"Error from OpenAI: {e}")
+            logger.error(f"Error from OpenAI: {e}")
             return None

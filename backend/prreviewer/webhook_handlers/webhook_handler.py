@@ -44,7 +44,6 @@ class GitHubWebhookHandler:
         if event == "pull_request" and payload.get("action") in ["opened", "reopened"]:
             return self.handle_pull_request(payload)
         elif event == "pull_request" and payload.get("action") == "synchronize":
-            print("0")
             return self.process_commit_feedback(payload)
 
         return JsonResponse({"status": "ok"})
