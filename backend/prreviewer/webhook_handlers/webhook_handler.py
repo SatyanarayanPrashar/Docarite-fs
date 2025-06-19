@@ -12,7 +12,7 @@ import jwt
 import requests
 import logging
 from webhook_handlers.github_authenticator import EventParser, GitHubAuthenticator, SignatureValidator
-from llm_services.llm_call import analyse_pr
+from llm_services.llm_call import LLM_Services
 
 load_dotenv()
 from pathlib import Path
@@ -35,6 +35,7 @@ class GitHubWebhookHandler:
         self.parser = EventParser(request)
         self.validator = SignatureValidator(request, self.secret)
         self.auth = GitHubAuthenticator(APP_ID, PRIVATE_KEY)
+        self.llm = LLM_Services()
 
     def handle(self):
         if not self.validator.is_valid():
@@ -46,6 +47,9 @@ class GitHubWebhookHandler:
 
         if event == "pull_request" and payload.get("action") in ["opened", "reopened"]:
             return self.handle_pull_request(payload)
+        elif event == "pull_request" and payload.get("action") == "synchronize":
+            print("0")
+            return self.handle_comment_changes(payload)
 
         return JsonResponse({"status": "ok"})
 
@@ -74,7 +78,7 @@ class GitHubWebhookHandler:
             issue_info = self.fetch_linked_issue(repo, linked_issues[0], access_token)
 
         try:
-            comment_text = analyse_pr(payload, access_token, issue_info) or "Thank you for your contribution 🚀!"
+            comment_text = self.llm.analyse_pr(payload, access_token, issue_info) or "Thank you for your contribution 🚀!"
         except Exception as e:
             logger.error(f"Error analysing PR: {e}")
             comment_text = "Thank you for your contribution 🚀!"
@@ -121,7 +125,7 @@ class GitHubWebhookHandler:
 
         return self._post_comment(comment_text)
     
-    def fetch_linked_issue(repo_full_name, issue_number, access_token):
+    def fetch_linked_issue(self, repo_full_name, issue_number, access_token):
         """
         Fetch issue details from a GitHub repository.
 
@@ -153,3 +157,39 @@ class GitHubWebhookHandler:
         except requests.RequestException as e:
             logger.error(f"Failed to fetch issue #{issue_number}: {e}")
             return None
+
+    def handle_comment_changes(self, payload):
+        repo = payload["repository"]["full_name"]
+        pr_number = payload["pull_request"]["number"]
+        installation_id = payload["installation"]["id"]
+        latest_commit_sha = payload["pull_request"]["head"]["sha"]
+
+        jwt_token = self.auth.create_jwt()
+        access_token = self.auth.get_installation_token(jwt_token, installation_id)
+        if not access_token:
+            return JsonResponse({"error": "Access token missing"}, status=502)
+        
+        headers = {
+            "Authorization": f"token {access_token}",
+            "Accept": "application/vnd.github+json"
+        }
+        # Fetch last commit details
+        commit_url = f"https://api.github.com/repos/{repo}/commits/{latest_commit_sha}"
+        commit_res = requests.get(commit_url, headers=headers)
+        commit_data = commit_res.json()
+
+        # Fetch last comment by bot
+        comment_url = f"https://api.github.com/repos/{repo}/issues/{pr_number}/comments"
+        comment_res = requests.get(comment_url, headers=headers)
+        comments = comment_res.json()
+        bot_comments = [c for c in comments if c["user"]["type"] == "Bot" and "docarite" in c["user"]["login"]]
+        last_comment = bot_comments[-1]["body"] if bot_comments else ""
+
+        # Analyse and post updated comment
+        try:
+            comment_text = self.llm.analyse_commit_changes(last_comment, commit_data) or "Changes noted!"
+        except Exception as e:
+            logger.error(f"Error analysing commit changes: {e}")
+            comment_text = "Thanks for the update! 🔁"
+
+        return self.post_comment(repo, pr_number, access_token, comment_text)
