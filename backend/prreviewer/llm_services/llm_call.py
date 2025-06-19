@@ -83,6 +83,9 @@ class LLM_Services:
 
         code_changes = "\n\n".join(patches) if patches else "No code changes detected."
 
+        print(f"Last comment: {last_comment}")
+        print(f"\nCode changes: {code_changes}")
+
         messages = [
             {
                 "role": "system",
