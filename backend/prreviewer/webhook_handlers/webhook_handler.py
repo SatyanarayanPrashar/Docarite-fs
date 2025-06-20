@@ -1,26 +1,22 @@
-# views.py
 import re
 from django.http import JsonResponse
-from django.shortcuts import redirect
-import hmac, hashlib, json
-from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponseForbidden
-import time
 import os
 from dotenv import load_dotenv
-import jwt
 import requests
 import logging
 from webhook_handlers.github_authenticator import EventParser, GitHubAuthenticator, SignatureValidator
-from llm_services.llm_call import analyse_pr
+from llm_services.llm_call import LLM_Services
 
 load_dotenv()
 from pathlib import Path
 
 GITHUB_INSTALLATION_REDIRECT_URL = os.getenv("GITHUB_INSTALLATION_REDIRECT_URL")
 APP_ID = os.getenv("GITHUB_APP_ID")
+PVT_KEY = os.getenv("PVT_KEY")
+GIT_SECRET_KEY = os.getenv("GIT_SECRET_KEY")
 BASE_DIR = Path(__file__).resolve().parent.parent
-PEM_PATH = BASE_DIR / 'docarite.2025-06-14.private-key.pem'
+PEM_PATH = BASE_DIR / PVT_KEY
 
 with open(PEM_PATH, 'r') as f:
     PRIVATE_KEY = f.read()
@@ -31,10 +27,11 @@ logger = logging.getLogger(__name__)
 class GitHubWebhookHandler:
     def __init__(self, request):
         self.request = request
-        self.secret = b'mysecret123'
+        self.secret = GIT_SECRET_KEY.encode() if GIT_SECRET_KEY else b"default_fallback_secret"
         self.parser = EventParser(request)
         self.validator = SignatureValidator(request, self.secret)
         self.auth = GitHubAuthenticator(APP_ID, PRIVATE_KEY)
+        self.llm = LLM_Services()
 
     def handle(self):
         if not self.validator.is_valid():
@@ -46,6 +43,8 @@ class GitHubWebhookHandler:
 
         if event == "pull_request" and payload.get("action") in ["opened", "reopened"]:
             return self.handle_pull_request(payload)
+        elif event == "pull_request" and payload.get("action") == "synchronize":
+            return self.process_commit_feedback(payload)
 
         return JsonResponse({"status": "ok"})
 
@@ -74,7 +73,7 @@ class GitHubWebhookHandler:
             issue_info = self.fetch_linked_issue(repo, linked_issues[0], access_token)
 
         try:
-            comment_text = analyse_pr(payload, access_token, issue_info) or "Thank you for your contribution 🚀!"
+            comment_text = self.llm.analyse_pr(payload, access_token, issue_info) or "Thank you for your contribution 🚀!"
         except Exception as e:
             logger.error(f"Error analysing PR: {e}")
             comment_text = "Thank you for your contribution 🚀!"
@@ -121,7 +120,7 @@ class GitHubWebhookHandler:
 
         return self._post_comment(comment_text)
     
-    def fetch_linked_issue(repo_full_name, issue_number, access_token):
+    def fetch_linked_issue(self, repo_full_name, issue_number, access_token):
         """
         Fetch issue details from a GitHub repository.
 
@@ -153,3 +152,105 @@ class GitHubWebhookHandler:
         except requests.RequestException as e:
             logger.error(f"Failed to fetch issue #{issue_number}: {e}")
             return None
+
+    def process_commit_feedback(self, payload):
+        try:
+            repo = payload["repository"]["full_name"]
+            latest_commit_sha = payload["pull_request"]["head"]["sha"]
+            pr_number = payload["pull_request"]["number"]
+            installation_id = payload["installation"]["id"]
+        except KeyError as e:
+            logger.error(f"Missing key in payload: {e}")
+            return JsonResponse({"error": f"Missing key {e}"}, status=400)
+
+        jwt_token = self.auth.create_jwt()
+        if not jwt_token:
+            return JsonResponse({"error": "JWT creation failed"}, status=500)
+
+        access_token = self.auth.get_installation_token(jwt_token, installation_id)
+        if not access_token:
+            return JsonResponse({"error": "Access token missing"}, status=502)
+        
+        review_info = self.fetch_commit_comment(repo, pr_number, latest_commit_sha, access_token)
+
+        if not review_info:
+            return JsonResponse({"error": "Failed to fetch review info"}, status=502)
+
+        try:
+            comment_text = self.llm.analyse_commit_changes(
+                review_info.get('last_comment'),
+                review_info.get('code_changes')
+            )
+        except Exception as e:
+            logger.error(f"Error analysing PR: {e}")
+            comment_text = "Thank you for your contribution 🚀!"
+
+        return self.post_comment(repo, pr_number, access_token, comment_text)
+
+    def fetch_commit_comment(self, repo_full_name, pr_number, latest_commit_sha, access_token):
+        headers = {
+            "Authorization": f"token {access_token}",
+            "Accept": "application/vnd.github+json"
+        }
+
+        commit_data = {}
+        comments = []
+
+        # Fetch latest commit data
+        try:
+            commit_url = f"https://api.github.com/repos/{repo_full_name}/commits/{latest_commit_sha}"
+            commit_res = requests.get(commit_url, headers=headers)
+            commit_res.raise_for_status()
+            commit_data = commit_res.json()
+        except requests.RequestException as e:
+            logger.error(f"Failed to fetch commit data for SHA {latest_commit_sha}: {e}")
+            return {
+                "last_comment": "",
+                "code_changes": "Failed to fetch commit data."
+            }
+
+        # Fetch comments on the PR
+        try:
+            comment_url = f"https://api.github.com/repos/{repo_full_name}/issues/{pr_number}/comments"
+            comment_res = requests.get(comment_url, headers=headers)
+            comment_res.raise_for_status()
+            comments = comment_res.json()
+        except requests.RequestException as e:
+            logger.error(f"Failed to fetch comments for PR #{pr_number}: {e}")
+            return {
+                "last_comment": "",
+                "code_changes": "Failed to fetch PR comments."
+            }
+
+        # Extract last bot comment
+        bot_name = "docarite"
+        last_comment = ""
+        try:
+            bot_comments = [
+                c for c in comments
+                if c["user"]["type"] == "Bot" and bot_name.lower() in c["user"]["login"].lower()
+            ]
+            if bot_comments:
+                last_comment = bot_comments[-1]["body"]
+        except Exception as e:
+            logger.warning(f"Error parsing comments for bot user: {e}")
+
+        # Extract patches
+        patches = []
+        try:
+            files = commit_data.get("files", [])
+            for file in files[:4]:  # Limit to 4 files to keep prompt concise
+                filename = file.get("filename", "")
+                patch = file.get("patch")
+                if patch:
+                    patches.append(f"File: {filename}\n{patch}")
+        except Exception as e:
+            logger.warning(f"Error parsing commit diff: {e}")
+
+        code_changes = "\n\n".join(patches) if patches else "No code changes detected."
+        logger.info(f"Code changes summary prepared with {len(patches)} file(s).")
+
+        return {
+            "last_comment": last_comment,
+            "code_changes": code_changes
+        }
