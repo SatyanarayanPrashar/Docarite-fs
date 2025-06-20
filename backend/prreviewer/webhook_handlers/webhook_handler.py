@@ -68,11 +68,11 @@ class GitHubWebhookHandler:
         pr_body = payload["pull_request"].get("body", "")
         linked_issues = re.findall(r"(?:Issue|Fixes|Closes|Resolves)[:\s]*#(\d+)", pr_body, re.IGNORECASE)
 
-        pr_info = None
-        if linked_issues:
-            pr_info = self.fetch_pr_info(repo, pr_number, access_token)
+        pr_info = self.fetch_pr_info(repo, pr_number, access_token)
 
-        issue_info = self.fetch_linked_issue(repo, linked_issues[0], access_token)
+        issue_info = None
+        if linked_issues:
+            issue_info = self.fetch_linked_issue(repo, linked_issues[0], access_token)
 
         try:
             comment_text = self.llm.analyse_pr(pr_info, issue_info) or "Thank you for your contribution 🚀!"
