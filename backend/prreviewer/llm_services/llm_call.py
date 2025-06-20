@@ -71,21 +71,7 @@ class LLM_Services:
             return None
 
     @staticmethod
-    def analyse_commit_changes(last_comment, commit_data):
-        files = commit_data.get("files", [])
-
-        patches = []
-        for file in files[:4]:  # Limit to 4 files to keep prompt concise
-            filename = file.get("filename", "")
-            patch = file.get("patch")
-            if patch:
-                patches.append(f"File: {filename}\n{patch}")
-
-        code_changes = "\n\n".join(patches) if patches else "No code changes detected."
-
-        print(f"Last comment: {last_comment}")
-        print(f"\nCode changes: {code_changes}")
-
+    def analyse_commit_changes(last_comment, code_changes):
         messages = [
             {
                 "role": "system",
