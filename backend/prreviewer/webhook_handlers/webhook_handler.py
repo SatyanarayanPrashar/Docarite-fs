@@ -68,12 +68,14 @@ class GitHubWebhookHandler:
         pr_body = payload["pull_request"].get("body", "")
         linked_issues = re.findall(r"(?:Issue|Fixes|Closes|Resolves)[:\s]*#(\d+)", pr_body, re.IGNORECASE)
 
+        pr_info = self.fetch_pr_info(repo, pr_number, access_token)
+
         issue_info = None
         if linked_issues:
             issue_info = self.fetch_linked_issue(repo, linked_issues[0], access_token)
 
         try:
-            comment_text = self.llm.analyse_pr(payload, access_token, issue_info) or "Thank you for your contribution 🚀!"
+            comment_text = self.llm.analyse_pr(pr_info, issue_info) or "Thank you for your contribution 🚀!"
         except Exception as e:
             logger.error(f"Error analysing PR: {e}")
             comment_text = "Thank you for your contribution 🚀!"
@@ -151,6 +153,46 @@ class GitHubWebhookHandler:
             }
         except requests.RequestException as e:
             logger.error(f"Failed to fetch issue #{issue_number}: {e}")
+            return None
+
+    def fetch_pr_info(self, repo_full_name, pr_number, access_token):
+        pr_url = f"https://api.github.com/repos/{repo_full_name}/pulls/{pr_number}"
+        headers = {
+            "Authorization": f"token {access_token}",
+            "Accept": "application/vnd.github+json"
+        }
+
+        files_url = pr_url + "/files"
+        try:
+            response = requests.get(files_url, headers=headers)
+            response.raise_for_status()
+            files_changed = response.json()
+
+            patches = []
+            for file in files_changed[:4]:
+                filename = file.get("filename", "")
+                patch = file.get("patch")
+                if patch:
+                    patches.append(f"File: {filename}\n{patch}")
+
+            code_changes = "\n\n".join(patches)
+
+        except Exception as e:
+            logger.error(f"Error fetching file diffs: {e}")
+            return None
+
+        try:
+            response = requests.get(pr_url, headers=headers)
+            response.raise_for_status()
+            pr_data = response.json()
+            return {
+                "title": pr_data.get("title"),
+                "body": pr_data.get("body"),
+                "url": pr_data.get("html_url"),
+                "code_changes": code_changes
+            }
+        except requests.RequestException as e:
+            logger.error(f"Failed to fetch PR #{pr_number}: {e}")
             return None
 
     def process_commit_feedback(self, payload):

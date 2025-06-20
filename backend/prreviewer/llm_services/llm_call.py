@@ -13,51 +13,7 @@ logger = logging.getLogger(__name__)
 
 class LLM_Services:
 
-    @staticmethod
-    def analyse_pr(payload, access_token, issue_info=None):
-        pr_title = payload["pull_request"]["title"]
-        pr_body = payload["pull_request"]["body"] or ""
-        pr_url = payload["pull_request"]["url"]
-
-        issue_body = "No tagged issue"
-        if issue_info is not None:
-            issue_body = issue_info.get("body", "")
-
-        files_url = pr_url + "/files"
-        headers = {
-            "Authorization": f"token {access_token}",
-            "Accept": "application/vnd.github+json"
-        }
-
-        try:
-            response = requests.get(files_url, headers=headers)
-            response.raise_for_status()
-            files_changed = response.json()
-
-            patches = []
-            for file in files_changed[:4]:
-                filename = file.get("filename", "")
-                patch = file.get("patch")
-                if patch:
-                    patches.append(f"File: {filename}\n{patch}")
-
-            code_changes = "\n\n".join(patches)
-
-        except Exception as e:
-            logger.error(f"Error fetching file diffs: {e}")
-            return None
-
-        messages = [
-            {
-                "role": "system",
-                "content": pr_reviewer_prompt
-            },
-            {
-                "role": "user",
-                "content": f"Title: {pr_title}\n\nDescription: {pr_body}\n\nChanges:\n{code_changes}\n\nTagged Issue: {issue_body}"
-            }
-        ]
-
+    def llm_call(self, messages):
         try:
             completion = client.chat.completions.create(
                 model="gpt-4o-mini",
@@ -65,36 +21,21 @@ class LLM_Services:
                 temperature=0.4
             )
             return completion.choices[0].message.content
-
         except Exception as e:
             logger.error(f"Error from OpenAI: {e}")
             return None
 
-    @staticmethod
-    def analyse_commit_changes(last_comment, code_changes):
+    def analyse_pr(self, pr_info, issue_info=None):
+        issue_body = issue_info.get("body", "No tagged issue.") if issue_info else "No tagged issue."
         messages = [
-            {
-                "role": "system",
-                "content": comment_reviewer_prompt
-            },
-            {
-                "role": "user",
-                "content": (
-                    f"Below is the last feedback left by the reviewer bot:\n\n"
-                    f"{last_comment}\n\n"
-                    f"And here are the latest code changes from the most recent commit:\n\n"
-                    f"{code_changes}\n\n"
-                )
-            }
+            {"role": "system", "content": pr_reviewer_prompt},
+            {"role": "user", "content": f"Title: {pr_info.get('title')}\n\nDescription: {pr_info.get('body')}\n\nChanges:\n{pr_info.get('code_changes')}\n\nTagged Issue: {issue_body}"}
         ]
+        return self.llm_call(messages)
 
-        try:
-            completion = client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=messages,
-            )
-            return completion.choices[0].message.content
-
-        except Exception as e:
-            logger.error(f"Error from OpenAI: {e}")
-            return None
+    def analyse_commit_changes(self, last_comment, code_changes):
+        messages = [
+            {"role": "system", "content": comment_reviewer_prompt},
+            {"role": "user", "content": f"Below is the last feedback left by the reviewer bot:\n\n{last_comment}\n\nAnd here are the latest code changes from the most recent commit:\n\n{code_changes}\n\n"}
+        ]
+        return self.llm_call(messages)
