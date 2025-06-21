@@ -5,6 +5,8 @@ import Navbar_landing from "@/components/navbar_landing";
 import { motion } from 'framer-motion';
 import Footer_landing from "@/components/footer";
 import HeroSection from "@/components/hero_section";
+import Link from "next/link";
+import { FaLock } from "react-icons/fa";
 
 export default function Home() {
 
@@ -119,6 +121,100 @@ export default function Home() {
                     </div>
                     <p className="py-2 px-6 w-full text-zinc-900 text-lg md:text-xl border-l-4 border-blue-600">Smart Issue Sync</p>
                     <p className="px-7 text-zinc-600 text-base pb-7">Links code with issues from GitHub, Jira, and more to keep development aligned with priorities.</p>
+                </div>
+
+            </div>
+
+            <div className="flex flex-col gap-4 w-full max-w-6xl mx-auto py-10 sm:py-14 lg:py-[6rem] px-4 border-l border-r">
+                <p className="text-2xl sm:text-3xl md:text-4xl font-semibold text-zinc-900 text-center">
+                    "Give your Devs <br /> an unfair advantage"
+                </p>
+                <div className="flex flex-col items-center gap-3">
+                    <Link href="/authentication" className="px-8 py-2 rounded-full border border-white/50 text-white backdrop-blur-[10px] bg-gradient-to-br from-blue-600/80 to-blue-600/60 shadow-lg hover:from-blue-600/90 hover:to-blue-600/70 transition-all">
+                        Get Started
+                    </Link>
+                </div>
+            </div>
+
+            <div className="flex flex-col gap-4 w-full max-w-6xl mx-auto p-10 sm:p-14 lg:p-[6rem] border-l border-r pb-10 bg-blue-900">
+                <p className="text-2xl sm:text-3xl md:text-4xl font-semibold text-white">
+                    Your data stays <span className="text-orange-400">confidential</span>
+                </p>
+                <p className="text-xl text-white">
+                    We take security, privacy, and compliance seriously.
+                </p>
+                <div className="flex gap-4 items-center text-white/80">
+                    <FaLock />
+                    <p >
+                        Review environments spin up instantly and disappear without a trace.
+                    </p>
+                </div>
+                <div className="flex gap-4 items-center text-white/80">
+                    <FaLock />
+                    <p>
+                        End-to-end encryption protects your code during reviews with zero data retention post-review.
+                    </p>
+                </div>
+            </div>
+
+            <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center px-4 py-16 md:py-24">
+                <div className="flex flex-col text-center lg:text-left">
+                    <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
+                        Pay Only for What You Use
+                    </h2>
+                    <p className="mt-4 text-lg text-slate-600 max-w-lg mx-auto lg:mx-0">
+                        Enable features exactly when you need them. You will only be charged for the resources you actually consume.
+                    </p>
+
+                    <div className="mt-8 space-y-6">
+                        <div className="flex items-start gap-4">
+                            <div className="flex-shrink-0 h-6 w-6 mt-1 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs">
+                                ✓
+                            </div>
+                            <div>
+                                <h3 className="font-semibold text-slate-800">No Monthly Lock-ins</h3>
+                                <p className="text-slate-500">Forget paying for unused features. Activate tools only when you need them.</p>
+                            </div>
+                        </div>
+                        <div className="flex items-start gap-4">
+                            <div className="flex-shrink-0 h-6 w-6 mt-1 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs">
+                                ✓
+                            </div>
+                            <div>
+                                <h3 className="font-semibold text-slate-800">Feature-Level Control</h3>
+                                <p className="text-slate-500">Turn individual features on or off based on your workflow—you're always in control.</p>
+                            </div>
+                        </div>
+                        <div className="flex items-start gap-4">
+                            <div className="flex-shrink-0 h-6 w-6 mt-1 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs">
+                                ✓
+                            </div>
+                            <div>
+                                <h3 className="font-semibold text-slate-800">Flexible & Fair</h3>
+                                <p className="text-slate-500">Whether you're reviewing 2 pull requests or 200, you&apos;re charged only for what you use.</p>
+                            </div>
+                        </div>
+                        <div className="flex items-start gap-4">
+                            <div className="flex-shrink-0 h-6 w-6 mt-1 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs">
+                                ✓
+                            </div>
+                            <div>
+                                <h3 className="font-semibold text-slate-800">Perfect for Teams of All Sizes</h3>
+                                <p className="text-slate-500">From solo developers to large teams—scale your usage without scaling costs unnecessarily.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="flex flex-col items-center py-6">
+                    <div className="relative h-[16rem] md:h-[20rem] w-full">
+                        <Image
+                            src="/price_action.png"
+                            fill
+                            alt="Smart Issue Sync"
+                            className="object-contain p-8"
+                        />
+                    </div>
                 </div>
             </div>
 

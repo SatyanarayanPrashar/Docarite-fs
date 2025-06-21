@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export default function Footer_landing() {
     return (
-        <footer className="w-full max-w-7xl mx-auto border-t border-zinc-600/20 px-6 sm:px-8 py-10 mt-8 sm:mt-14">
+        <footer className="w-full max-w-6xl mx-auto border-t border-zinc-600/20 px-6 sm:px-8 py-10 mt-8 sm:mt-14">
             <div className="flex flex-col items-center gap-10 text-center md:flex-row md:items-start md:text-left">
                 <div className="flex flex-col items-center md:flex-1 md:items-start">
                     <Link href="/" className="flex items-center gap-2">
