@@ -1,234 +1,224 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import Navbar_landing from "@/components/navbar_landing";
 import { motion } from 'framer-motion';
 import Footer_landing from "@/components/footer";
+import HeroSection from "@/components/hero_section";
+import Link from "next/link";
+import { FaLock } from "react-icons/fa";
 
 export default function Home() {
 
-  return (
-    <div className="flex flex-col min-h-screen items-center text-white relative z-10 overflow-x-hidden">
-      <Navbar_landing />
-      <div className="fixed top-0 left-0 w-screen h-screen -z-10">
-        <Image
-          src="/background2.png"
-          alt="Background"
-          fill
-          priority
-          className="object-cover"
-        />
-      </div>
-      <motion.div
-        className="fixed top-[17%] left-1/4 w-[50%] h-[50%] md:w-[32%] md:h-[45%] md:left-1/3 -z-10 blur-[4px]"
-        animate={{ y: [0, -20, 0] }}
-        transition={{
-          duration: 5,
-          repeat: Infinity,
-          ease: 'easeInOut',
-        }}
-      >
-        <Image
-          src="/bg_logo.png"
-          alt="Background Logo"
-          fill
-          priority
-          className="object-contain"
-        />
-      </motion.div>
+    return (
+        <div className="flex flex-col min-h-screen min-w-screen items-center relative z-10 overflow-x-hidden">
+            <Navbar_landing />
+            <div className="relative h-[100vh] w-full bg-blue-100 flex items-center justify-center p-4">
+                <motion.div
+                    className="absolute top-[15%] left-[10%] w-[15%] h-[25%] z-0 blur-2xl"
+                    animate={{ y: [0, -20, 0] }}
+                    transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+                >
+                    <div className="w-full h-full bg-blue-300/50 rounded-full"></div>
+                </motion.div>
 
-      <div className="w-full px-4 sm:px-6 lg:px-8 flex flex-col items-center">
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-center mt-50 sm:mt-64 md:mt-58">Review Smarter. Ship Faster.</h1>
-        <h2 className="mt-6 text-lg sm:text-xl text-center text-white/80 max-w-3xl mx-auto">
-          Let AI handle the pull requests — Docarite finds bugs, suggests improvements, and saves your team hours on code reviews.
-        </h2>
+                <motion.div
+                    className="absolute bottom-[10%] right-[15%] w-[20%] h-[30%] z-0 blur-3xl"
+                    animate={{ y: [0, 25, 0] }}
+                    transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
+                >
+                    <div className="w-full h-full bg-indigo-200/50 rounded-full"></div>
+                </motion.div>
 
-        <div className="flex justify-center">
-          <Link href="/authentication" className="mt-10 px-8 py-2 rounded-full border border-white/50 text-white backdrop-blur-[10px] bg-gradient-to-br from-white/20 to-white/10 shadow-[0_8px_20px_rgba(255,255,255,0.1)] hover:bg-blue-600 transition-all">
-            Get Started
-          </Link>
+                <motion.div
+                    className="absolute top-[20%] right-[25%] w-[12%] h-[20%] z-0 blur-2xl"
+                    animate={{ x: [-15, 15, -15] }}
+                    transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
+                >
+                    <div className="w-full h-full bg-sky-200/50 rounded-full"></div>
+                </motion.div>
+
+                <div className="relative z-10 w-full max-w-6xl bg-white/14 flex flex-col items-center backdrop-blur-xl rounded-4xl border border-white/10 shadow-[2px] p-10 md:p-20">
+                    <HeroSection />
+                </div>
+
+                <motion.div className="absolute top-160 z-20 w-[24rem] sm:w-[25rem] md:w-[35rem] lg:w-[50rem] 2xl:w-[60rem] aspect-[50/34] mx-auto rounded-lg overflow-hidde"
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{
+                        type: 'spring',
+                        stiffness: 40,
+                        damping: 10,
+                    }}
+                >
+                    <div className="relative w-full h-full">
+                        <Image
+                            src="/hero_img.png"
+                            fill
+                            alt="docarite_hero_image"
+                        />
+                    </div>
+                </motion.div>
+            </div>
+
+            <div className="flex flex-col gap-4 w-full max-w-6xl mx-auto pt-40 sm:pt-64 lg:pt-[32rem] px-4 border-l border-r pb-10">
+                <p className="text-base sm:text-lg md:text-xl text-zinc-600 text-center">
+                    No more manual grunt work in your dev pipeline.
+                </p>
+                <p className="text-2xl sm:text-3xl md:text-4xl font-semibold text-zinc-900 text-center">
+                    Docarite automates everything <br className="hidden sm:block" /> around your code platform.
+                </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 w-full max-w-6xl mx-auto border">
+                <div className="flex flex-col items-center py-6 border-b md:border-r">
+                    <div className="relative h-[16rem] md:h-[20rem] w-[85%]">
+                        <Image
+                            src="/demo.png"
+                            fill
+                            alt="AI-Powered PR Reviews"
+                            className="object-contain p-8"
+                        />
+                    </div>
+                    <p className="py-2 px-6 w-full text-zinc-900 text-xl md:text-2xl border-l-4 border-blue-600">AI-Powered PR Reviews</p>
+                    <p className="px-7 text-zinc-600 text-base">Get smart, contextual feedback on pull requests — no manual review needed.</p>
+                </div>
+
+                <div className="flex flex-col items-center py-6 border-b">
+                    <div className="relative h-[16rem] md:h-[20rem] w-[85%]">
+                        <Image
+                            src="/headstart.png"
+                            fill
+                            alt="Headstart for Developers"
+                            className="object-contain p-8"
+                        />
+                    </div>
+                    <p className="py-2 px-6 w-full text-zinc-900 text-lg md:text-xl border-l-4 border-blue-600">Headstart for Developers</p>
+                    <p className="px-7 text-zinc-600 text-base pb-10">Docarite reads your issues and auto-suggests how to tackle them with its code awareness — saving time and reducing back-and-forth.</p>
+                </div>
+
+                <div className="flex flex-col items-center py-6 border-b md:border-b-0 md:border-r">
+                    <div className="relative h-[16rem] md:h-[20rem] w-[75%]">
+                        <Image
+                            src="/git_platforms.png"
+                            fill
+                            alt="Works Across Git Platforms"
+                            className="object-contain p-8"
+                        />
+                    </div>
+                    <p className="py-2 px-6 w-full text-zinc-900 text-lg md:text-xl border-l-4 border-blue-600">Works Across Git Platforms</p>
+                    <p className="px-7 w-full text-zinc-600 text-base">Seamlessly supports GitHub, GitLab, Azure Repos, and more.</p>
+                </div>
+
+                <div className="flex flex-col items-center py-6">
+                    <div className="relative h-[16rem] md:h-[20rem] w-full">
+                        <Image
+                            src="/smart_sync.png"
+                            fill
+                            alt="Smart Issue Sync"
+                            className="object-contain p-8"
+                        />
+                    </div>
+                    <p className="py-2 px-6 w-full text-zinc-900 text-lg md:text-xl border-l-4 border-blue-600">Smart Issue Sync</p>
+                    <p className="px-7 text-zinc-600 text-base pb-7">Links code with issues from GitHub, Jira, and more to keep development aligned with priorities.</p>
+                </div>
+
+            </div>
+
+            <div className="flex flex-col gap-4 w-full max-w-6xl mx-auto py-10 sm:py-14 lg:py-[6rem] px-4 border-l border-r">
+                <p className="text-2xl sm:text-3xl md:text-4xl font-semibold text-zinc-900 text-center">
+                    "Give your Devs <br /> an unfair advantage"
+                </p>
+                <div className="flex flex-col items-center gap-3">
+                    <Link href="/authentication" className="px-8 py-2 rounded-full border border-white/50 text-white backdrop-blur-[10px] bg-gradient-to-br from-blue-600/80 to-blue-600/60 shadow-lg hover:from-blue-600/90 hover:to-blue-600/70 transition-all">
+                        Get Started
+                    </Link>
+                </div>
+            </div>
+
+            <div className="flex flex-col gap-4 w-full max-w-6xl mx-auto p-10 sm:p-14 lg:p-[6rem] border-l border-r pb-10 bg-blue-900">
+                <p className="text-2xl sm:text-3xl md:text-4xl font-semibold text-white">
+                    Your data stays <span className="text-orange-400">confidential</span>
+                </p>
+                <p className="text-xl text-white">
+                    We take security, privacy, and compliance seriously.
+                </p>
+                <div className="flex gap-4 items-center text-white/80">
+                    <FaLock />
+                    <p >
+                        Review environments spin up instantly and disappear without a trace.
+                    </p>
+                </div>
+                <div className="flex gap-4 items-center text-white/80">
+                    <FaLock />
+                    <p>
+                        End-to-end encryption protects your code during reviews with zero data retention post-review.
+                    </p>
+                </div>
+            </div>
+
+            <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center px-4 py-16 md:py-24">
+                <div className="flex flex-col text-center lg:text-left">
+                    <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
+                        Pay Only for What You Use
+                    </h2>
+                    <p className="mt-4 text-lg text-slate-600 max-w-lg mx-auto lg:mx-0">
+                        Enable features exactly when you need them. You will only be charged for the resources you actually consume.
+                    </p>
+
+                    <div className="mt-8 space-y-6">
+                        <div className="flex items-start gap-4">
+                            <div className="flex-shrink-0 h-6 w-6 mt-1 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs">
+                                ✓
+                            </div>
+                            <div>
+                                <h3 className="font-semibold text-slate-800">No Monthly Lock-ins</h3>
+                                <p className="text-slate-500">Forget paying for unused features. Activate tools only when you need them.</p>
+                            </div>
+                        </div>
+                        <div className="flex items-start gap-4">
+                            <div className="flex-shrink-0 h-6 w-6 mt-1 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs">
+                                ✓
+                            </div>
+                            <div>
+                                <h3 className="font-semibold text-slate-800">Feature-Level Control</h3>
+                                <p className="text-slate-500">Turn individual features on or off based on your workflow—you're always in control.</p>
+                            </div>
+                        </div>
+                        <div className="flex items-start gap-4">
+                            <div className="flex-shrink-0 h-6 w-6 mt-1 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs">
+                                ✓
+                            </div>
+                            <div>
+                                <h3 className="font-semibold text-slate-800">Flexible & Fair</h3>
+                                <p className="text-slate-500">Whether you're reviewing 2 pull requests or 200, you&apos;re charged only for what you use.</p>
+                            </div>
+                        </div>
+                        <div className="flex items-start gap-4">
+                            <div className="flex-shrink-0 h-6 w-6 mt-1 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs">
+                                ✓
+                            </div>
+                            <div>
+                                <h3 className="font-semibold text-slate-800">Perfect for Teams of All Sizes</h3>
+                                <p className="text-slate-500">From solo developers to large teams—scale your usage without scaling costs unnecessarily.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="flex flex-col items-center py-6">
+                    <div className="relative h-[16rem] md:h-[20rem] w-full">
+                        <Image
+                            src="/price_action.png"
+                            fill
+                            alt="Smart Issue Sync"
+                            className="object-contain p-8"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <Footer_landing />
         </div>
-
-        <motion.div
-          className="relative mt-7 sm:mt-13 w-full max-w-6xl mx-auto rounded-lg overflow-hidden"
-          initial={{ opacity: 0, paddingTop: "20px" }}
-          whileInView={{ opacity: 1, paddingTop: "0px" }}
-          transition={{ ease: "linear", duration: 0.3 }}
-          viewport={{ once: true, margin: "-100px" }}
-        >
-          <video
-            src="/hero.mp4"
-            autoPlay
-            muted
-            className="w-full h-full mt-26 object-cover rounded-lg"
-          />
-        </motion.div>
-
-        <p className="text-4xl font-bold mt-24 sm:mt-36 text-center px-4">AI Code Reviews</p>
-
-        <div className="flex flex-col gap-10 mt-7 sm:mt-13 w-full max-w-6xl mx-auto">
-
-          <div className="flex flex-col lg:flex-row gap-8">
-            <div className="relative flex w-full flex-col justify-between gap-6 rounded-[1rem] border border-white/50 bg-gradient-to-b from-white/20 to-white/5 p-6 backdrop-blur-[10px] sm:p-8 md:flex-row lg:h-[19rem] lg:w-[70%] lg:p-10 shadow-[inset_0_0_0.5px_rgba(255,255,255,0.2),0_20px_30px_rgba(0,0,0,0.2)]">
-              <div className="pointer-events-none absolute inset-0 rounded-[1rem] bg-[radial-gradient(ellipse_at_top_left,rgba(255,255,255,0.2),transparent)]" />
-              <div className="z-10 flex w-full flex-col gap-4 md:w-[40%] lg:w-[30%]">
-                <p className="text-2xl font-semibold sm:text-3xl">Tailored reviews.<br /> Every time.</p>
-                <p className="text-sm text-white/80 sm:text-base">
-                  Adaptive feedback tailored to your coding style and team dynamics, driven by continuous learning.
-                </p>
-              </div>
-              <div className="relative z-10 mt-6 h-full w-full md:mt-0 md:w-[57%]">
-                <Image
-                  className="rounded-2xl object-cover"
-                  src="/demo.png"
-                  alt="Demo Preview"
-                  fill
-                />
-              </div>
-            </div>
-
-            <div className="relative flex h-auto w-full flex-col justify-between gap-4 overflow-hidden rounded-[1rem] border border-white/50 bg-gradient-to-b from-white/20 to-white/5 p-6 text-white backdrop-blur-[10px] sm:p-8 lg:h-[19rem] lg:w-[30%] lg:p-10 shadow-[inset_0_0_0.5px_rgba(255,255,255,0.2),0_20px_30px_rgba(0,0,0,0.2)]">
-              <div className="pointer-events-none absolute inset-0 rounded-[1rem] bg-[radial-gradient(ellipse_at_top_left,rgba(255,255,255,0.15),transparent)]" />
-              <div className="z-10">
-                <p className="text-2xl font-semibold">Spot bugs. Fix instantly.</p>
-                <p className="mt-2 text-sm text-white/80 sm:text-base">
-                  Context-aware reviews and instant fixes help catch issues earlier and ship confidently.
-                </p>
-              </div>
-              {/* <Image src="/asset1.png" alt="Readme Preview" width={150} height={150} className="z-10 h-auto w-1/2 self-center object-contain sm:w-2/3" /> */}
-            </div>
-          </div>
-
-          <div className="flex flex-col lg:flex-row-reverse gap-10">
-            <div className="relative flex w-full flex-col justify-between gap-6 rounded-[1rem] border border-white/50 bg-gradient-to-b from-white/20 to-white/5 p-6 backdrop-blur-[10px] sm:p-8 md:flex-row lg:h-[14.5rem] lg:w-[70%] lg:p-10 shadow-[inset_0_0_0.5px_rgba(255,255,255,0.2),0_20px_30px_rgba(0,0,0,0.2)]">
-              <div className="absolute inset-0 pointer-events-none rounded-[1rem] bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.2),transparent)]" />
-              <div className="flex flex-col gap-4 w-full z-10">
-                <p className="text-2xl sm:text-3xl font-semibold">Smart summaries. Clear insights.</p>
-                <p className="text-white/80">
-                  Whether it&apos;s a tiny tweak or a major feature, get crystal-clear PR summaries for every change.
-                </p>
-              </div>
-              {/* <div className="relative w-full md:w-[60%] h-64 md:h-full z-10 mt-6 md:mt-0">
-                    <Image
-                        className="rounded-2xl object-cover"
-                        src="/demo.png"
-                        alt="Readme Preview"
-                        fill
-                    />
-                </div> */}
-            </div>
-            <div className="relative flex w-full flex-col justify-between gap-6 rounded-[1rem] border border-white/50 bg-gradient-to-b from-white/20 to-white/5 p-6 backdrop-blur-[10px] sm:p-8 md:flex-row lg:h-[14.5rem] lg:w-[70%] lg:p-10 shadow-[inset_0_0_0.5px_rgba(255,255,255,0.2),0_20px_30px_rgba(0,0,0,0.2)]">
-              <div className="absolute inset-0 pointer-events-none rounded-[1rem] bg-[radial-gradient(ellipse_at_top_left,rgba(255,255,255,0.15),transparent)]" />
-              <div className="z-10">
-                <p className="text-2xl font-semibold">Know what has been changed and the impact!</p>
-                <p className="text-white/80 mt-2">
-                  See the list of changed files and a one-line description.
-                </p>
-              </div>
-              {/* <Image src="/demo.png" alt="Readme Preview" width={300} height={180} className="rounded-xl object-cover w-full h-auto self-center mt-4 z-10" /> */}
-            </div>
-          </div>
-        </div>
-
-        <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-16 mt-20 sm:mt-28 w-full max-w-6xl">
-          <div className="relative w-full h-80 sm:h-96 lg:w-1/2 lg:h-[32rem]">
-            <Image
-              className="rounded-2xl object-cover shadow-2xl"
-              src="/vibecoding.png"
-              alt="Developer coding with focus"
-              fill
-            />
-          </div>
-          <div className="flex flex-col gap-6 w-full lg:w-1/2 text-center lg:text-left">
-            <p className="text-3xl sm:text-4xl font-bold">
-              We back you, so you can Vibe code
-            </p>
-            <ul className="flex flex-col gap-7 mt-4 text-base sm:text-lg text-white/80">
-              <li className="flex items-start gap-3">
-                <CheckIcon />
-                <span>
-                  Looks for security lapses and potential vulnerabilities.
-                </span>
-              </li>
-              <li className="flex items-start gap-3">
-                <CheckIcon />
-                <span>
-                  Ensures code quality and adherence to best practices.
-                </span>
-              </li>
-              <li className="flex items-start gap-3">
-                <CheckIcon />
-                <span>
-                  Provides intelligent suggestions to optimize performance and
-                  improve maintainability.
-                </span>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="flex flex-col items-center gap-2 mt-24 sm:mt-36 w-full max-w-6xl mx-auto">
-          <p className="text-4xl font-bold text-center">Your Security is Our Priority</p>
-          <p className="text-white/80 mb-5">We take security, privacy, and compliance seriously.</p>
-          <div className="flex flex-col lg:flex-row gap-8 w-full">
-            
-            <div className="relative flex flex-col items-center text-center gap-6">
-              <div className="relative w-full h-20 sm:h-32 lg:w-[30rem] lg:h-[9rem]">
-                <Image
-                  className="object-cover"
-                  src="/datamask.png"
-                  alt="Developer coding with focus"
-                  fill
-                />
-              </div>
-              <div className="z-10">
-                <p className="text-2xl font-semibold">We mask all sensitive data</p>
-                <p className="mt-2 text-white/80">
-                  Any sensitive information is automatically detected and masked before it&apos;s sent to LLMs for analysis.
-                </p>
-              </div>
-            </div>
-            <div className="relative flex flex-col items-center text-center gap-6 ">
-              <div className="relative w-full h-20 sm:h-32 lg:w-[9rem] lg:h-[9rem]">
-                <Image
-                  className="rounded-2xl object-cover"
-                  src="/database.png"
-                  alt="Developer coding with focus"
-                  fill
-                />
-              </div>
-              <div className="z-10">
-                <p className="text-2xl font-semibold">We do not store any of your code</p>
-                <p className="mt-2 text-white/80">
-                  Your code is processed in-memory and never saved to disk, ensuring complete confidentiality.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-
-        <Footer_landing />
-      </div>
-    </div>
-  );
+    );
 }
-
-const CheckIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={2}
-    stroke="currentColor"
-    className="w-6 h-6 text-green-400 flex-shrink-0 mt-1"
-
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-    />
-  </svg>
-);
