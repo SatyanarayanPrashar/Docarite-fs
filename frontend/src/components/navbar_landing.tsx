@@ -4,7 +4,6 @@ import Link from "next/link";
 
 export default function Navbar_landing() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-
     const navLinks = [
         { href: "/readme-generator", text: "README Generator" },
         { href: "/pricing", text: "Pricing" },
@@ -12,8 +11,8 @@ export default function Navbar_landing() {
     ];
 
     return (
-        <>
-            <div className="fixed top-4 left-1/2 z-50 w-[94%] -translate-x-1/2 rounded-full border border-white/30 bg-gradient-to-b from-white/10 to-white/5 px-6 py-3 text-white backdrop-blur-xl md:w-2/3 md:px-8">
+
+            <div className="fixed top-0 left-1/2 z-50 -translate-x-1/2 bg-gradient-to-b from-white/10 to-white/5 px-6 py-4 text-zinc-800 backdrop-blur-xl w-full max-w-6xl border">
                 <div className="flex items-center justify-between content-center">
                     <Link href="/" className="flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
                         <Image
@@ -28,7 +27,7 @@ export default function Navbar_landing() {
 
                     <nav className="hidden items-center gap-8 md:flex">
                         {navLinks.map((link) => (
-                            <Link key={link.href} href={link.href} className="text-sm transition-colors hover:text-white/80">
+                            <Link key={link.href} href={link.href} className="text-sm transition-colors">
                                 {link.text}
                             </Link>
                         ))}
@@ -61,21 +60,5 @@ export default function Navbar_landing() {
                     </div>
                 </div>
             </div>
-
-            {isMenuOpen && (
-                <div
-                    className="fixed top-20 z-40 w-[94%] left-1/2 -translate-x-1/2 rounded-2xl border border-white/30 bg-black/40 p-4 backdrop-blur-xl md:hidden"
-                    onClick={() => setIsMenuOpen(false)}
-                >
-                    <nav className="flex flex-col items-center gap-4">
-                        {navLinks.map((link) => (
-                            <Link key={link.href} href={link.href} className="w-full py-2 text-center">
-                                {link.text}
-                            </Link>
-                        ))}
-                    </nav>
-                </div>
-            )}
-        </>
     );
 }
