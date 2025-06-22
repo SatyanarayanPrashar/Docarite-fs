@@ -57,7 +57,6 @@ export default function HomePage() {
         setError(null);
         try {
             const { data: { session } } = await supabase.auth.getSession();
-            console.log("Session data:", session);
             const githubToken = session?.provider_token;
 
             if (!githubToken) {

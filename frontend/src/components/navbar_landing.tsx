@@ -5,7 +5,7 @@ import Link from "next/link";
 export default function Navbar_landing() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const navLinks = [
-        { href: "/readme-generator", text: "README Generator" },
+        // { href: "/readme-generator", text: "README Generator" },
         { href: "/pricing", text: "Pricing" },
         { href: "/authentication", text: "Login" },
     ];

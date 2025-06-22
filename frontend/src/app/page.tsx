@@ -157,7 +157,7 @@ export default function Home() {
                 </div>
             </div>
 
-            <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center px-4 py-16 md:py-24">
+            <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center px-4 mt-20 py-16 md:py-24">
                 <div className="flex flex-col text-center lg:text-left">
                     <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
                         Pay Only for What You Use
@@ -215,6 +215,40 @@ export default function Home() {
                             className="object-contain p-8"
                         />
                     </div>
+                </div>
+            </div>
+
+            <div className="w-full max-w-6xl mx-auto">
+                <div className="flex flex-col lg:flex-row gap-12 lg:gap-16 items-center w-full max-w-7xl mx-auto px-4 sm:px-6 py-16 lg:py-24">
+                    <div className="flex flex-col items-center lg:items-start text-center lg:text-left w-full lg:w-7/12 flex-shrink-0">
+                        <h2 className="text-2xl sm:text-7xl font-bold text-slate-900 tracking-tight">
+                            Get Started Today
+                        </h2>
+                        <p className="mt-4 text-xl text-slate-600 max-w-md mx-auto lg:mx-0">
+                            Supercharge your team to ship faster.
+                        </p>
+                        <div className="flex items-center gap-3">
+                            <Link href="/authentication" className="mt-6 px-8 py-2 rounded-full border border-white/50 text-white backdrop-blur-[10px] bg-gradient-to-br from-blue-700/80 to-blue-700/60 shadow-lg hover:from-blue-700/90 hover:to-blue-700/70 transition-all">
+                                Get Started
+                            </Link>
+                            <Link href="/contact-us" className="mt-6 px-8 py-2 rounded-full border border-zinc-600/20 text-zinc-600 backdrop-blur-[10px] bg-gradient-to-br from-white/80 to-white/60 shadow-lg hover:from-sky-100/90 hover:to-sky-100/70 transition-all">
+                                Contact us
+                            </Link>
+                        </div>
+
+                        <p className="mt-4 text-sm text-slate-500">
+                            2-click signup with GitHub/GitLab
+                        </p>
+                    </div>
+                    <div className="relative w-full lg:w-5/12 aspect-video lg:aspect-[50/44]">
+                        <Image
+                            src="/get_started.png"
+                            fill
+                            alt="An illustration showing the product interface"
+                            className="object-contain"
+                        />
+                    </div>
+
                 </div>
             </div>
 
