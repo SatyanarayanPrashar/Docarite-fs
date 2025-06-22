@@ -127,7 +127,7 @@ export default function Home() {
 
             <div className="flex flex-col gap-4 w-full max-w-6xl mx-auto py-10 sm:py-14 lg:py-[6rem] px-4 border-l border-r">
                 <p className="text-2xl sm:text-3xl md:text-4xl font-semibold text-zinc-900 text-center">
-                    "Give your Devs <br /> an unfair advantage"
+                &quot;Give your Devs <br /> an unfair advantage&quot;
                 </p>
                 <div className="flex flex-col items-center gap-3">
                     <Link href="/authentication" className="px-8 py-2 rounded-full border border-white/50 text-white backdrop-blur-[10px] bg-gradient-to-br from-blue-600/80 to-blue-600/60 shadow-lg hover:from-blue-600/90 hover:to-blue-600/70 transition-all">
@@ -182,7 +182,7 @@ export default function Home() {
                             </div>
                             <div>
                                 <h3 className="font-semibold text-slate-800">Feature-Level Control</h3>
-                                <p className="text-slate-500">Turn individual features on or off based on your workflow—you're always in control.</p>
+                                <p className="text-slate-500">Turn individual features on or off based on your workflow—you&apos;re always in control.</p>
                             </div>
                         </div>
                         <div className="flex items-start gap-4">
@@ -191,7 +191,7 @@ export default function Home() {
                             </div>
                             <div>
                                 <h3 className="font-semibold text-slate-800">Flexible & Fair</h3>
-                                <p className="text-slate-500">Whether you're reviewing 2 pull requests or 200, you&apos;re charged only for what you use.</p>
+                                <p className="text-slate-500">Whether you&apos;re reviewing 2 pull requests or 200, you&apos;re charged only for what you use.</p>
                             </div>
                         </div>
                         <div className="flex items-start gap-4">
