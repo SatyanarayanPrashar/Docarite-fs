@@ -32,7 +32,7 @@ export default function Navbar() {
                                 <DropdownMenuItem>
                                     <Link href="/readme-generator">
                                         <div className="flex flex-col p-2">
-                                            <p className="font-semibold">README Generator</p>
+                                            {/* <p className="font-semibold">README Generator</p> */}
                                             <p className="pl-2">Automatically generate an intrusive Readme.md file for your Git Repository</p>
                                         </div>
                                     </Link>
