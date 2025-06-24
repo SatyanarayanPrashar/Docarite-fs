@@ -12,6 +12,7 @@ from pr_bot.serializers import OrganisationSerializer, RepositorySerializer
 from webhook_handlers.webhook_handler import GitHubWebhookHandler
 
 load_dotenv()
+logger = logging.getLogger(__name__)
 
 GITHUB_INSTALLATION_REDIRECT_URL = os.getenv("GITHUB_INSTALLATION_REDIRECT_URL")
 
@@ -24,7 +25,6 @@ def install_callback(request):
 
     return redirect(f"{GITHUB_INSTALLATION_REDIRECT_URL}?installation_id={installation_id}")
 
-logger = logging.getLogger(__name__)
 
 @csrf_exempt
 def github_webhook(request):
@@ -34,9 +34,9 @@ def github_webhook(request):
 @csrf_exempt
 @require_http_methods(["GET"])
 def organisation_view(request):
-    if request.method == 'GET':
-        organisations = Organisation.objects.all().values('id', 'created_at', 'updated_at')
-        return JsonResponse(list(organisations), safe=False)
+    organisations = Organisation.objects.all()
+    serializer = OrganisationSerializer(organisations, many=True)
+    return JsonResponse(serializer.data, safe=False, status=200)
 
 @csrf_exempt
 @require_http_methods(["POST"])
@@ -53,15 +53,15 @@ def organisation_create_view(request):
         return JsonResponse(serializer.data, status=201)
 
     except Exception as e:
+        logger.exception("Error while creating organisation")
         return JsonResponse({'error': str(e)}, status=400)
 
 @csrf_exempt
 @require_http_methods(["GET"])
 def organisation_detail_view(request, org_id):
-    if request.method == 'GET':
-        organisation = get_object_or_404(Organisation, id=org_id)
-        serializer = OrganisationSerializer(organisation)
-        return JsonResponse(serializer.data, status=200)
+    organisation = get_object_or_404(Organisation, id=org_id)
+    serializer = OrganisationSerializer(organisation)
+    return JsonResponse(serializer.data, status=200)
     
 @csrf_exempt
 @require_http_methods(["GET", "PUT"])
@@ -81,6 +81,7 @@ def repository_detail_view(request, repo_id):
                 return JsonResponse(serializer.data, status=200)
             return JsonResponse(serializer.errors, status=400)
         except Exception as e:
+            logger.exception("Error while updating repository")
             return JsonResponse({'error': str(e)}, status=400)
 
 @csrf_exempt
@@ -101,4 +102,5 @@ def repository_create_view(request):
         return JsonResponse(serializer.errors, status=400)
 
     except Exception as e:
+        logger.exception("Error while creating repository")
         return JsonResponse({'error': str(e)}, status=400)
