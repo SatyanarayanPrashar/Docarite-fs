@@ -4,6 +4,8 @@ import uuid
 class Organisation(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.TextField()
+    email = models.EmailField(unique=True, null=True, blank=True)  # Optional email field
+    website = models.URLField(null=True, blank=True)  # Optional website field
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
 
@@ -13,7 +15,6 @@ class User(models.Model):
     email = models.EmailField(unique=True)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
-    role = models.TextField()
 
     organisations = models.ManyToManyField(
         Organisation,
@@ -32,8 +33,7 @@ class Permission(models.Model):
 
 class Repository(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    github_id = models.BigIntegerField(unique=True)
-    github_url = models.BigIntegerField(unique=True)
+    github_url = models.CharField(unique=True, default="NA")
     name = models.CharField(max_length=255)
     installation_id = models.CharField(max_length=255)
     organisation = models.ForeignKey(Organisation, on_delete=models.CASCADE, related_name='repositories')

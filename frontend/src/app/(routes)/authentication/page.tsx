@@ -17,8 +17,8 @@ export default function Home() {
           const { error } = await supabase.auth.signInWithOAuth({
             provider: 'github',
             options: {
-              redirectTo: `https://docarite.com/auth/callback`,
-            //   redirectTo: `http://localhost:3000//auth/callback`,
+            //   redirectTo: `https://docarite.com/auth/callback`,
+              redirectTo: `http://localhost:3000//auth/callback`,
             },
           })
           if (error) throw error

@@ -54,6 +54,7 @@ export function AppSidebar() {
             if (!user) {
                 redirect('/authentication')
             }
+            console.log("User:", user)
             setUser(user)
             setLoading(false)
         }

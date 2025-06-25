@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useCallback } from "react"
 import { supabase } from "@/lib/supabase"
-import { CirclePlus } from "lucide-react"
 import {
     Table,
     TableBody,
@@ -11,46 +10,40 @@ import {
     TableRow,
     RepoRow
 } from "@/components/ui/table"
-import { Skeleton } from "@/components/ui/skeleton"
 import { GithubRepo } from "@/types/githube_types"
 import { redirect } from 'next/navigation'
-
-const GITHUB_APP_INSTALL_URL = "https://github.com/apps/docarite/installations/new";
-
-const AddRepoButton = () => (
-    <a href={GITHUB_APP_INSTALL_URL} className="px-5 h-[40px] rounded-md text-white bg-blue-600 hover:bg-blue-700 flex gap-2 items-center transition-colors shadow-sm">
-        <CirclePlus size={16} />
-        Add Repositories
-    </a>
-);
-
-const EmptyState = () => (
-    <div className="relative w-full flex flex-col items-center text-center p-10 sm:p-16 gap-6 rounded-lg border border-dashed border-neutral-300 bg-neutral-50">
-        <div className="absolute inset-0 pointer-events-none rounded-lg bg-[radial-gradient(ellipse_at_center,rgba(200,200,255,0.1),transparent)]" />
-        <h3 className="text-xl font-semibold text-neutral-800">No Repositories Found</h3>
-        <p className="text-neutral-600 max-w-md">
-            Docarite currently doesn&apos;t have access to any repositories for this account. Please install the Docarite GitHub App and grant access to the repositories you want to work with.
-        </p>
-        <div className="mt-2">
-            <AddRepoButton />
-        </div>
-    </div>
-);
-
-const LoadingSkeleton = () => (
-    <div className="space-y-4">
-        <Skeleton className="h-12 w-full" />
-        <Skeleton className="h-12 w-full" />
-        <Skeleton className="h-12 w-full" />
-        <Skeleton className="h-12 w-full" />
-    </div>
-);
-
+import { AddRepoButton } from "./[component]/addRepo_btn"
+import { EmptyState } from "./[component]/emptyState"
+import { LoadingSkeleton } from "./[component]/loading"
 
 export default function HomePage() {
     const [repos, setRepos] = useState<GithubRepo[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+
+    const fetchOrganisation = useCallback(async () => {
+        setLoading(true);
+        setError(null);
+
+        try {
+            const response = await fetch("http://127.0.0.1:8000/api/organisation/");
+            if (!response.ok) throw new Error("Failed to fetch organisation data.");
+
+            const organisationData = await response.json();
+            console.log("Organisation Data:", organisationData);
+            // Process organisationData as needed
+        } catch (err) {
+            if (err instanceof Error) {
+                setError(err.message);
+                console.error(err);
+            } else {
+                setError("An unexpected error occurred.");
+                console.error(err);
+            }
+        } finally {
+            setLoading(false);
+        }
+    }, [])
 
     const fetchRepos = useCallback(async () => {
         setLoading(true);
