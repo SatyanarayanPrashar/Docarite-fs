@@ -266,29 +266,36 @@ def sync_github_repositories(request):
     """
     try:
         data = json.loads(request.body)
+        logger.info("Received data for syncing GitHub repositories:", data)
 
         installed_repos = data.get("installed_repos", [])
         organisation_id = data.get("organisation_id")
 
         if not isinstance(installed_repos, list) or not organisation_id:
+            logger.error("Invalid input: installed_repos must be a list and organisation_id is required")
             return JsonResponse({"error": "installed_repos must be a list and organisation_id is required"}, status=400)
 
         try:
             organisation = Organisation.objects.get(id=organisation_id)
+            logger.info("Organisation found: %s", organisation)
         except Organisation.DoesNotExist:
+            logger.error("Organisation not found with ID: %s", organisation_id)
             return JsonResponse({"error": "Organisation not found"}, status=404)
 
         # Step 1: Incoming GitHub URLs
         installed_repo_urls = set(repo["github_url"] for repo in installed_repos)
+        logger.info("Installed repository URLs: %s", installed_repo_urls)
 
         # Step 2: All repos for this org in DB
         db_repos_qs = Repository.objects.filter(organisation=organisation)
         db_repos_map = {repo.github_url: repo for repo in db_repos_qs}
         db_repo_urls = set(db_repos_map.keys())
+        logger.info("Database repository URLs: %s", db_repo_urls)
 
         to_create = []
         to_activate = []
         to_deactivate = db_repo_urls - installed_repo_urls
+        logger.info("Repositories to deactivate: %s", to_deactivate)
 
         for repo in installed_repos:
             url = repo["github_url"]
@@ -299,6 +306,7 @@ def sync_github_repositories(request):
                 repo_obj = db_repos_map[url]
                 if not repo_obj.active:
                     to_activate.append(url)
+                    logger.info("Repository to activate: %s", url)
             else:
                 to_create.append(Repository(
                     id=uuid.uuid4(),
@@ -309,6 +317,7 @@ def sync_github_repositories(request):
                     active=True,
                     preferences={}
                 ))
+                logger.info("Repository to create: %s", url)
 
         # Step 3: Perform bulk operations
         Repository.objects.filter(github_url__in=to_deactivate, organisation=organisation).update(active=False)
@@ -321,8 +330,9 @@ def sync_github_repositories(request):
             "activated": to_activate,
             "created": [r.github_url for r in to_create]
         }
-
+        logger.info("Repository sync response: %s", response)
 
         return JsonResponse(response)
     except Exception as e:
+        logger.exception("Error during GitHub repository sync")
         return JsonResponse({"error": str(e)}, status=500)

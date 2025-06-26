@@ -22,7 +22,7 @@ export default function RepoSyncWrapper() {
     const { userInfo, userError } = useUserInfo();
     const { organisation, repos, loading, error } = useOrganisation(userInfo?.email, refetchTrigger);
 
-    const { isSyncing, startSync } = useSyncGitHubRepos({ organisation });
+    const { isSyncing, startSync } = useSyncGitHubRepos({ organisation, onSyncSuccess: () => setRefetchTrigger(prev => prev + 1) });
 
     const syncTriggered = useRef(false);
 

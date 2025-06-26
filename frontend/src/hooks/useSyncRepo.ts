@@ -1,15 +1,20 @@
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { useRouter } from "next/navigation";
 import { Organisation_type } from "@/types/model_types";
-import { GithubRepo_type } from "@/types/githube_types";
 
 interface GithubRepoProps {
     organisation: Organisation_type | null;
+    onSyncSuccess?: () => void;
 }
 
-export const useSyncGitHubRepos = ({ organisation}: GithubRepoProps) => {
-    const router = useRouter();
+interface Github_response {
+    id: number;
+    name: string;
+    html_url: string;
+    active: boolean;
+}
+
+export const useSyncGitHubRepos = ({ organisation, onSyncSuccess }: GithubRepoProps) => {
     const [isSyncing, setIsSyncing] = useState(false);
 
     const startSync = async (installationId: string | null) => {
@@ -41,8 +46,8 @@ export const useSyncGitHubRepos = ({ organisation}: GithubRepoProps) => {
             const { repositories: githubRepos } = await githubRes.json();
 
             // Format data as required
-            const installedRepos = githubRepos.map((repo: GithubRepo_type) => ({
-                github_url: repo.github_url,
+            const installedRepos = githubRepos.map((repo: Github_response) => ({
+                github_url: repo.html_url,
                 name: repo.name,
                 installation_id: installationId,
                 organisation: organisation.id,
@@ -64,8 +69,9 @@ export const useSyncGitHubRepos = ({ organisation}: GithubRepoProps) => {
                 const errData = await postRes.json();
                 throw new Error(`Failed to sync repositories: ${JSON.stringify(errData)}`);
             }
-
-            router.push("/home/repositories");
+            
+            // Trigger refetch in parent
+            onSyncSuccess?.();
         } catch (err) {
             console.error("Repository sync failed:", err);
         } finally {
