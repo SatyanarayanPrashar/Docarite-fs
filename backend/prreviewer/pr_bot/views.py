@@ -141,35 +141,19 @@ def repository_create_view(request):
     try:
         data = json.loads(request.body)
 
-        # Ensure we received a list
-        if not isinstance(data, list):
-            return JsonResponse({'error': 'Expected a list of repositories'}, status=400)
+        # Ensure organisation exists
+        org_id = data.get('organisation')
+        if not Organisation.objects.filter(id=org_id).exists():
+            return JsonResponse({'error': 'Invalid organisation ID'}, status=400)
 
-        created_repos = []
-        errors = []
-
-        for index, repo_data in enumerate(data):
-            org_id = repo_data.get('organisation')
-            if not Organisation.objects.filter(id=org_id).exists():
-                errors.append({'index': index, 'error': f'Invalid organisation ID: {org_id}'})
-                continue
-
-            serializer = RepositorySerializer(data=repo_data)
-            if serializer.is_valid():
-                repo = serializer.save()
-                created_repos.append(RepositorySerializer(repo).data)
-            else:
-                errors.append({'index': index, 'error': serializer.errors})
-
-        return JsonResponse({
-            'created': created_repos,
-            'errors': errors
-        }, status=207 if errors else 201)
+        serializer = RepositorySerializer(data=data)
+        if serializer.is_valid():
+            repo = serializer.save()
+            return JsonResponse(RepositorySerializer(repo).data, status=201)
+        return JsonResponse(serializer.errors, status=400)
 
     except Exception as e:
-        logger.exception("Error while creating repositories")
         return JsonResponse({'error': str(e)}, status=400)
-
 
 ## Frontend use
 @csrf_exempt
@@ -266,3 +250,86 @@ def register_organisation_with_user(request):
     except Exception as e:
         logger.exception("Error during org + user registration")
         return JsonResponse({"error": str(e)}, status=400)
+
+
+from django.http import JsonResponse
+from .models import Repository, Organisation
+from django.views.decorators.csrf import csrf_exempt
+import json
+import uuid
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def sync_github_repositories(request):
+    """
+        In database list of repos available: A (inactive), B (active), C(active), D(active), E(active)
+        Actually installed list of repos on github: A, B, E, F
+        The differnce is C D . that means they were installed earlier but then removed.
+        1. C and D should be marked with active = false.
+        2. where as F should be added to the database.
+        3. also notice that A was inactive so it will be made active.
+
+        Hence, new database will be: A (active), B (active), C(inactive), D(inactive), E(active), F(active)
+    """
+    try:
+        data = json.loads(request.body)
+
+        installed_repos = data.get("installed_repos", [])
+        organisation_id = data.get("organisation_id")
+
+        if not isinstance(installed_repos, list) or not organisation_id:
+            return JsonResponse({"error": "installed_repos must be a list and organisation_id is required"}, status=400)
+
+        try:
+            organisation = Organisation.objects.get(id=organisation_id)
+        except Organisation.DoesNotExist:
+            return JsonResponse({"error": "Organisation not found"}, status=404)
+
+        installed_repo_urls = set(repo["github_url"] for repo in installed_repos)
+
+        # Get all current repos for the organisation
+        db_repos_qs = Repository.objects.filter(organisation=organisation)
+        db_repos_map = {repo.github_url: repo for repo in db_repos_qs}
+
+        to_deactivate = []
+        to_activate = []
+        to_create = []
+
+        for repo in installed_repos:
+            url = repo["github_url"]
+            name = repo.get("name", "Unknown")
+            installation_id = repo.get("installation_id", "NA")
+
+            if url in db_repos_map:
+                repo_obj = db_repos_map[url]
+                if not repo_obj.active:
+                    to_activate.append(url)
+            else:
+                # New repo to be added
+                to_create.append(Repository(
+                    id=uuid.uuid4(),
+                    github_url=url,
+                    name=name,
+                    installation_id=installation_id,
+                    organisation=organisation,
+                    active=True,
+                    preferences={}
+                ))
+
+        # Deactivate any repo not in the current installed list
+        current_db_urls = set(db_repos_map.keys())
+        to_deactivate_urls = current_db_urls - installed_repo_urls
+
+        Repository.objects.filter(github_url__in=to_deactivate_urls, organisation=organisation).update(active=False)
+        Repository.objects.filter(github_url__in=to_activate, organisation=organisation).update(active=True)
+        Repository.objects.bulk_create(to_create)
+
+        return JsonResponse({
+            "message": "Repository sync completed.",
+            "deactivated": list(to_deactivate_urls),
+            "activated": to_activate,
+            "created": [r.github_url for r in to_create]
+        })
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
