@@ -1,4 +1,4 @@
-export interface GithubRepo {
+export interface GithubRepo_type {
     id: number;
     name: string;
     private?: boolean | null;

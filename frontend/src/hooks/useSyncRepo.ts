@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
+import { Organisation_type } from "@/types/model_types";
+import { GithubRepo_type } from "@/types/githube_types";
 
 interface GithubRepoProps {
-    organisation: any;
-    repos: any[];
-    refetch: () => void;
+    organisation: Organisation_type | null;
 }
 
-export const useSyncGitHubRepos = ({ organisation, repos, refetch }: GithubRepoProps) => {
+export const useSyncGitHubRepos = ({ organisation}: GithubRepoProps) => {
     const router = useRouter();
     const [isSyncing, setIsSyncing] = useState(false);
 
@@ -41,8 +41,8 @@ export const useSyncGitHubRepos = ({ organisation, repos, refetch }: GithubRepoP
             const { repositories: githubRepos } = await githubRes.json();
 
             // Format data as required
-            const installedRepos = githubRepos.map((repo: any) => ({
-                github_url: repo.html_url,
+            const installedRepos = githubRepos.map((repo: GithubRepo_type) => ({
+                github_url: repo.github_url,
                 name: repo.name,
                 installation_id: installationId,
                 organisation: organisation.id,
@@ -65,9 +65,7 @@ export const useSyncGitHubRepos = ({ organisation, repos, refetch }: GithubRepoP
                 throw new Error(`Failed to sync repositories: ${JSON.stringify(errData)}`);
             }
 
-            refetch();
             router.push("/home/repositories");
-
         } catch (err) {
             console.error("Repository sync failed:", err);
         } finally {

@@ -107,7 +107,7 @@ export function AppSidebar() {
                             </p>
                             <button
                                 onClick={handleLogout}
-                                className="text-xs text-blue-400 hover:underline"
+                                className="text-xs text-blue-400 hover:underline hover:bg-neutral-200 p-2 rounded-sm"
                             >
                                 <LogOutIcon size={15} color="gray"/>
                             </button>
@@ -115,7 +115,7 @@ export function AppSidebar() {
                         <p className="text-sm font-medium truncate">Admin</p>
                     </div>
                 </div>
-                <div className="p-2 flex items-center gap-3 border m-2 rounded-lg">
+                <div className="p-2 flex items-center gap-3 border m-2 rounded-lg hover:bg-neutral-200">
                     <SidebarTrigger />
                     <p className="text-sm font-medium truncate">Collapse</p>
                 </div>

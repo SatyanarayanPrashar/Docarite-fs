@@ -7,16 +7,15 @@ import { LoadingSkeleton } from "./loading";
 interface RegisterStateProps {
     userName: string;
     userEmail: string;
-    onRegistrationSuccess: () => void;
+    onRegisterSuccess?: () => void;
 }
 
-export default function RegisterState({ userName, userEmail, onRegistrationSuccess }: RegisterStateProps) {
+export default function RegisterState({ userName, userEmail, onRegisterSuccess }: RegisterStateProps) {
     const [orgName, setOrgName] = useState("");
     const [orgEmail, setOrgEmail] = useState("");
     const [orgWebsite, setOrgWebsite] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-
 
     const handleRegister = async () => {
         if (!orgName) {
@@ -46,7 +45,7 @@ export default function RegisterState({ userName, userEmail, onRegistrationSucce
                 throw new Error(errorData.detail || "Failed to register organisation.");
             }
 
-            onRegistrationSuccess();
+            onRegisterSuccess?.();
         } catch (err) {
              if (err instanceof Error) {
                 setError(err.message);

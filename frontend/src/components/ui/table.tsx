@@ -6,7 +6,7 @@ import { FaGithub } from "react-icons/fa"
 import { cn } from "@/lib/utils"
 import { useState } from "react"
 import { Switch } from "./switch"
-import { GithubRepo } from "@/types/githube_types"
+import { GithubRepo_type } from "@/types/githube_types"
 
 function Table({ className, ...props }: React.ComponentProps<"table">) {
   return (
@@ -82,7 +82,7 @@ function TableCell({ className, ...props }: React.ComponentProps<"td">) {
   )
 }
 
-const RepoRow = ({ repo }: { repo: GithubRepo }) => {
+const RepoRow = ({ repo }: { repo: GithubRepo_type }) => {
   const [isActive, setIsActive] = useState(repo.active);
 
   const handleToggle = () => {
