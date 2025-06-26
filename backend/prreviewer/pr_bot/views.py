@@ -251,13 +251,6 @@ def register_organisation_with_user(request):
         logger.exception("Error during org + user registration")
         return JsonResponse({"error": str(e)}, status=400)
 
-
-from django.http import JsonResponse
-from .models import Repository, Organisation
-from django.views.decorators.csrf import csrf_exempt
-import json
-import uuid
-
 @csrf_exempt
 @require_http_methods(["POST"])
 def sync_github_repositories(request):
@@ -285,15 +278,17 @@ def sync_github_repositories(request):
         except Organisation.DoesNotExist:
             return JsonResponse({"error": "Organisation not found"}, status=404)
 
+        # Step 1: Incoming GitHub URLs
         installed_repo_urls = set(repo["github_url"] for repo in installed_repos)
 
-        # Get all current repos for the organisation
+        # Step 2: All repos for this org in DB
         db_repos_qs = Repository.objects.filter(organisation=organisation)
         db_repos_map = {repo.github_url: repo for repo in db_repos_qs}
+        db_repo_urls = set(db_repos_map.keys())
 
-        to_deactivate = []
-        to_activate = []
         to_create = []
+        to_activate = []
+        to_deactivate = db_repo_urls - installed_repo_urls
 
         for repo in installed_repos:
             url = repo["github_url"]
@@ -305,7 +300,6 @@ def sync_github_repositories(request):
                 if not repo_obj.active:
                     to_activate.append(url)
             else:
-                # New repo to be added
                 to_create.append(Repository(
                     id=uuid.uuid4(),
                     github_url=url,
@@ -316,20 +310,19 @@ def sync_github_repositories(request):
                     preferences={}
                 ))
 
-        # Deactivate any repo not in the current installed list
-        current_db_urls = set(db_repos_map.keys())
-        to_deactivate_urls = current_db_urls - installed_repo_urls
-
-        Repository.objects.filter(github_url__in=to_deactivate_urls, organisation=organisation).update(active=False)
+        # Step 3: Perform bulk operations
+        Repository.objects.filter(github_url__in=to_deactivate, organisation=organisation).update(active=False)
         Repository.objects.filter(github_url__in=to_activate, organisation=organisation).update(active=True)
         Repository.objects.bulk_create(to_create)
 
-        return JsonResponse({
+        response = {
             "message": "Repository sync completed.",
-            "deactivated": list(to_deactivate_urls),
+            "deactivated": list(to_deactivate),
             "activated": to_activate,
             "created": [r.github_url for r in to_create]
-        })
+        }
 
+
+        return JsonResponse(response)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
