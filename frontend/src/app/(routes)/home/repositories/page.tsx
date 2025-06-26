@@ -43,14 +43,10 @@ export default function HomePage() {
     useEffect(() => {
         if (installationId && organisation?.id && repos !== undefined && !syncTriggered.current) {
             syncTriggered.current = true;
-            
-            console.log("All data ready. Starting 3-second timer to sync repositories.");
-            console.log("Syncing repositories for installation:", installationId, "with organisation:", organisation.id, "and repos:", repos.length);
             const timer = setTimeout(() => {
                 startSync(installationId);
-            }, 3000);
+            }, 1000);
 
-            // Cleanup the timer if the component unmounts.
             return () => clearTimeout(timer);
         }
     }, [installationId, organisation, repos, startSync]);

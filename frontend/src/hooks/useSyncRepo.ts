@@ -8,15 +8,11 @@ interface GithubRepoProps {
     refetch: () => void;
 }
 
-// The hook now prepares the function but doesn't run it automatically.
 export const useSyncGitHubRepos = ({ organisation, repos, refetch }: GithubRepoProps) => {
     const router = useRouter();
     const [isSyncing, setIsSyncing] = useState(false);
 
-    // This is the function that the component will call.
-    // It contains all the logic that was previously in the useEffect.
     const startSync = async (installationId: string | null) => {
-        // Guard against invalid calls
         if (!installationId || !organisation?.id || repos === undefined) {
             console.error("Sync cannot start: missing required data.");
             return;
@@ -73,11 +69,9 @@ export const useSyncGitHubRepos = ({ organisation, repos, refetch }: GithubRepoP
         } catch (err) {
             console.error("Repository sync failed:", err);
         } finally {
-            // Ensure the syncing state is turned off, even if errors occur.
             setIsSyncing(false);
         }
     };
     
-    // Return the state and the function so the component can use them.
     return { isSyncing, startSync };
 };
