@@ -141,19 +141,33 @@ def repository_create_view(request):
     try:
         data = json.loads(request.body)
 
-        # Ensure organisation exists
-        org_id = data.get('organisation')
-        if not Organisation.objects.filter(id=org_id).exists():
-            return JsonResponse({'error': 'Invalid organisation ID'}, status=400)
+        # Ensure we received a list
+        if not isinstance(data, list):
+            return JsonResponse({'error': 'Expected a list of repositories'}, status=400)
 
-        serializer = RepositorySerializer(data=data)
-        if serializer.is_valid():
-            repo = serializer.save()
-            return JsonResponse(RepositorySerializer(repo).data, status=201)
-        return JsonResponse(serializer.errors, status=400)
+        created_repos = []
+        errors = []
+
+        for index, repo_data in enumerate(data):
+            org_id = repo_data.get('organisation')
+            if not Organisation.objects.filter(id=org_id).exists():
+                errors.append({'index': index, 'error': f'Invalid organisation ID: {org_id}'})
+                continue
+
+            serializer = RepositorySerializer(data=repo_data)
+            if serializer.is_valid():
+                repo = serializer.save()
+                created_repos.append(RepositorySerializer(repo).data)
+            else:
+                errors.append({'index': index, 'error': serializer.errors})
+
+        return JsonResponse({
+            'created': created_repos,
+            'errors': errors
+        }, status=207 if errors else 201)
 
     except Exception as e:
-        logger.exception("Error while creating repository")
+        logger.exception("Error while creating repositories")
         return JsonResponse({'error': str(e)}, status=400)
 
 
