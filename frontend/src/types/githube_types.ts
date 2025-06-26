@@ -1,7 +1,7 @@
 export interface GithubRepo {
     id: number;
-    full_name: string;
-    private: boolean;
-    html_url: string;
+    name: string;
+    private?: boolean | null;
+    github_url: string;
     active: boolean;
 }

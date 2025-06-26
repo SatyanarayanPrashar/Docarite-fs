@@ -1,109 +1,57 @@
-"use client"
+"use client";
 
-import { useEffect, useState, useCallback } from "react"
-import { supabase } from "@/lib/supabase"
 import {
+    RepoRow,
     Table,
     TableBody,
     TableHead,
     TableHeader,
     TableRow,
-    RepoRow
-} from "@/components/ui/table"
-import { GithubRepo } from "@/types/githube_types"
-import { redirect } from 'next/navigation'
-import { AddRepoButton } from "./[component]/addRepo_btn"
-import { EmptyState } from "./[component]/emptyState"
-import { LoadingSkeleton } from "./[component]/loading"
+} from "@/components/ui/table";
+import { AddRepoButton } from "./[component]/addRepo_btn";
+import { EmptyState } from "./[component]/emptyState";
+import { LoadingSkeleton } from "./[component]/loading";
+import RegisterState from "./[component]/newOrg_state";
+import { GithubRepo } from "@/types/githube_types";
+import { useUserInfo } from "@/hooks/usefetchUser";
+import { useOrganisation } from "@/hooks/usefetchOrg";
+import { useSearchParams } from 'next/navigation';
+import { useSyncGitHubRepos } from "@/hooks/useSyncRepo";
+import { Loader2 } from "lucide-react";
+import { useEffect, useRef } from "react";
+
+const SyncingDisplay = () => (
+    <div className="flex flex-col items-center justify-center gap-4 text-center p-8 border rounded-lg bg-gray-50">
+        <Loader2 className="h-10 w-10 animate-spin text-blue-600" />
+        <h2 className="text-2xl font-semibold text-gray-800">Syncing the Repositories...</h2>
+        <p className="text-neutral-500">Please wait a moment while we add your new repository.</p>
+    </div>
+);
+
 
 export default function HomePage() {
-    const [repos, setRepos] = useState<GithubRepo[]>([])
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState<string | null>(null)
+    const searchParams = useSearchParams();
+    const installationId = searchParams.get("installation_id");
 
-    const fetchOrganisation = useCallback(async () => {
-        setLoading(true);
-        setError(null);
+    const { userInfo, userError } = useUserInfo();
+    const { organisation, repos, loading, error, refetch } = useOrganisation(userInfo?.email);
+    
+    const { isSyncing, startSync } = useSyncGitHubRepos({ organisation, repos, refetch });
 
-        try {
-            const response = await fetch("http://127.0.0.1:8000/api/organisation/");
-            if (!response.ok) throw new Error("Failed to fetch organisation data.");
-
-            const organisationData = await response.json();
-            console.log("Organisation Data:", organisationData);
-            // Process organisationData as needed
-        } catch (err) {
-            if (err instanceof Error) {
-                setError(err.message);
-                console.error(err);
-            } else {
-                setError("An unexpected error occurred.");
-                console.error(err);
-            }
-        } finally {
-            setLoading(false);
-        }
-    }, [])
-
-    const fetchRepos = useCallback(async () => {
-        setLoading(true);
-        setError(null);
-        try {
-            const { data: { session } } = await supabase.auth.getSession();
-            const githubToken = session?.provider_token;
-
-            if (!githubToken) {
-                await supabase.auth.signOut();
-                redirect('/authentication');
-            }
-
-            const installationsRes = await fetch("https://api.github.com/user/installations", {
-                headers: {
-                    Authorization: `Bearer ${githubToken}`,
-                    Accept: "application/vnd.github.v3+json"
-                }
-            });
-            if (!installationsRes.ok) throw new Error("Failed to fetch GitHub App installations.");
-
-            const installationsData = await installationsRes.json();
-            if (!installationsData.installations || installationsData.installations.length === 0) {
-                 setRepos([]);
-                 setLoading(false);
-                 return;
-            }
-
-            const repoPromises = installationsData.installations.map(async (installation: { id: number }) => {
-                const reposRes = await fetch(`https://api.github.com/user/installations/${installation.id}/repositories`, {
-                    headers: {
-                        Authorization: `Bearer ${githubToken}`,
-                        Accept: "application/vnd.github.v3+json"
-                    }
-                });
-                if (!reposRes.ok) throw new Error(`Failed to fetch repositories for installation ${installation.id}.`);
-                const reposData = await reposRes.json();
-                return reposData.repositories || [];
-            });
-
-            const allReposArrays = await Promise.all(repoPromises);
-            const allRepos = allReposArrays.flat().map((repo: GithubRepo) => ({ ...repo, active: true }));
-
-            setRepos(allRepos);
-        } catch (err) {
-            if (err instanceof Error) {
-                setError(err.message);
-                console.error(err);
-            } else {
-                setError("An unexpected error occurred.");
-                console.error(err);
-            }
-        } finally {
-            setLoading(false);
-        }
-    }, []);
+    const syncTriggered = useRef(false);
 
     useEffect(() => {
-        fetchRepos();
-    }, [fetchRepos]);
+        if (installationId && organisation?.id && repos !== undefined && !syncTriggered.current) {
+            syncTriggered.current = true;
+            const timer = setTimeout(() => {
+                startSync(installationId);
+            }, 1000);
+
+            return () => clearTimeout(timer);
+        }
+    }, [installationId, organisation, repos, startSync]);
+
+    const handleRegistrationSuccess = () => refetch();
 
     return (
         <div className="w-full max-w-6xl mx-auto flex flex-col gap-8 p-4 sm:p-6 md:p-8">
@@ -112,32 +60,52 @@ export default function HomePage() {
                     <h1 className="text-3xl font-bold text-gray-900">Repositories</h1>
                     <p className="text-sm text-neutral-500 mt-1">List of repositories accessible to Docarite.</p>
                 </div>
-                {!loading && repos.length > 0 && <AddRepoButton />}
+                {!loading && organisation && repos.length > 0 && !isSyncing && <AddRepoButton />}
             </header>
 
-            {error && <div className="text-red-600 bg-red-100 border border-red-400 rounded-md p-4">{error}</div>}
-
-            {loading ? (
-                <LoadingSkeleton />
-            ) : repos.length === 0 ? (
-                <EmptyState />
-            ) : (
-                <div className="border rounded-lg overflow-hidden">
-                    <Table>
-                        <TableHeader className="bg-gray-50">
-                            <TableRow>
-                                <TableHead className="w-2/4">Repository</TableHead>
-                                <TableHead>GitHub</TableHead>
-                                <TableHead>Settings</TableHead>
-                                <TableHead>Active</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {repos.map(repo => <RepoRow key={repo.id} repo={repo} />)}
-                        </TableBody>
-                    </Table>
+            {(userError || error) && (
+                <div className="text-red-600 bg-red-100 border border-red-400 rounded-md p-4">
+                    {userError || error}
                 </div>
             )}
+            
+            {isSyncing ? (
+                 <SyncingDisplay />
+            ) : ( 
+                loading ? (
+                    <LoadingSkeleton />
+                ) : organisation ? (
+                    repos.length === 0 ? (
+                        <EmptyState />
+                    ) : (
+                        <div className="border rounded-lg overflow-hidden">
+                            <Table>
+                                <TableHeader className="bg-gray-50">
+                                    <TableRow>
+                                        <TableHead className="w-2/4">Repository</TableHead>
+                                        <TableHead>GitHub</TableHead>
+                                        <TableHead>Settings</TableHead>
+                                        <TableHead>Active</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {repos.map((repo: GithubRepo) => (
+                                        <RepoRow key={repo.id} repo={repo} />
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    )
+                ) : (
+                    userInfo && (
+                        <RegisterState
+                            userName={userInfo.user_metadata.full_name ?? userInfo.email ?? ""}
+                            userEmail={userInfo.email ?? ""}
+                            onRegistrationSuccess={handleRegistrationSuccess}
+                        />
+                    )
+                )
+            )}
         </div>
-    )
+    );
 }

@@ -208,7 +208,7 @@ def register_organisation_with_user(request):
             return JsonResponse({"error": "Missing required fields"}, status=400)
 
         # Prevent duplicates
-        if Organisation.objects.filter(email=org_email).exists():
+        if org_email and Organisation.objects.filter(email=org_email).exists():
             return JsonResponse({"error": "Organisation with this email already exists"}, status=400)
         if User.objects.filter(email=user_email).exists():
             return JsonResponse({"error": "User with this email already exists"}, status=400)
