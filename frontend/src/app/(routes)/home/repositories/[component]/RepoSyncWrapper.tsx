@@ -1,12 +1,9 @@
 'use client';
 
-import {
-    RepoRow, Table, TableBody, TableHead, TableHeader, TableRow,
-} from "@/components/ui/table";
+import { RepoRow, Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AddRepoButton } from "./addRepo_btn";
 import { EmptyState } from "./emptyState";
 import { LoadingSkeleton } from "./loading";
-import RegisterState from "./newOrg_state";
 import { GithubRepo_type } from "@/types/githube_types";
 import { useUserInfo } from "@/hooks/usefetchUser";
 import { useOrganisation } from "@/hooks/usefetchOrg";
@@ -14,6 +11,7 @@ import { useSearchParams } from 'next/navigation';
 import { useSyncGitHubRepos } from "@/hooks/useSyncRepo";
 import { useEffect, useState, useRef } from "react";
 import { SyncingDisplay } from "./syncing_display";
+import RegisterState from "./newOrg_state";
 
 export default function RepoSyncWrapper() {
     const searchParams = useSearchParams();
