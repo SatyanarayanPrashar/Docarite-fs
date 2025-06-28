@@ -12,8 +12,8 @@ export default function Navbar_landing() {
 
     return (
 
-            <div className="fixed top-0 left-1/2 z-50 -translate-x-1/2 bg-gradient-to-b from-white/10 to-white/5 px-6 py-4 text-zinc-800 backdrop-blur-xl w-full max-w-6xl border">
-                <div className="flex items-center justify-between content-center">
+            <div className="fixed top-0 left-1/2 z-50 -translate-x-1/2 bg-gradient-to-b from-white/100 to-white/50 px-6 py-4 text-zinc-800 w-full border-b flex justify-center">
+                <div className="flex items-center justify-between content-center w-full max-w-6xl px-10">
                     <Link href="/" className="flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
                         <Image
                             src="/logo_no_name.png"
