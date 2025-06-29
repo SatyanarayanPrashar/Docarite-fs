@@ -45,7 +45,6 @@ class LLM_Services:
                 f"Please {'suggest' if labels else 'skip suggesting'} relevant labels for the PR."
             ]
             preference_note = "Note: " + " ".join(note_parts)
-            print(preference_note)
 
         messages.append({"role": "user", "content": f"{preference_note} \n\n Title: {pr_info.get('title')}\n\nDescription: {pr_info.get('body')}\n\nChanges:\n{pr_info.get('code_changes')}\n\nTagged Issue: {issue_body}"})
         return self.llm_call(messages)

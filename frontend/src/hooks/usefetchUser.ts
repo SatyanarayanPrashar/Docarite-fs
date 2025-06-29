@@ -10,10 +10,8 @@ export const useUserInfo = () => {
         const fetchUser = async () => {
             const { data, error } = await supabase.auth.getUser();
             if (error) {
-                console.error("Error fetching user info:", error);
                 setUserError("Could not fetch user information.");
             } else {
-                console.log("Fetched user info:", data.user);
                 setUserInfo(data.user);
             }
         };

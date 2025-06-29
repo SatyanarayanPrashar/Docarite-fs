@@ -15,8 +15,6 @@ export async function middleware(req: NextRequest) {
     data: { session },
   } = await supabase.auth.getSession()
 
-  console.log('middleware: session', session?.user?.email ?? 'none')
-
   // 4. If route is the auth callback, just let it go
   if (req.nextUrl.pathname.startsWith('/auth/callback')) {
     return res
