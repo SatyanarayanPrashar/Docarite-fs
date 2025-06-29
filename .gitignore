@@ -21,6 +21,8 @@ backend/file_structure.txt
 backend/.env
 backend/prreviewer/docarite.2025-06-14.private-key.pem
 
+backend/db.sqlite3
+
 
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
