@@ -32,7 +32,7 @@ export const useFetchRepository = (repo_id : string | null) => {
         };
         
         fetchOrganisation();
-    }, []);
+    }, [repo_id]);
     
     return { repo, loading, error };
 };

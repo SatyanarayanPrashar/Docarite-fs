@@ -2,7 +2,6 @@
 
 import Comming_soon_tag from '@/components/comming_soon';
 import { supabase } from '@/lib/supabase'
-import { motion } from 'framer-motion';
 import Image from "next/image";
 import { redirect } from 'next/navigation';
 import { useEffect } from 'react';
