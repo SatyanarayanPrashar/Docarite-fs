@@ -13,6 +13,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { GithubRepo_type, RepoPreferences } from '@/types/githube_types';
+import { isEqual } from 'lodash';
 
 const defaultPreferences: RepoPreferences = {
     reviewLanguage: 'English',
@@ -35,14 +36,32 @@ export default function SettingPage() {
 
     const [repo, setRepo] = useState<Partial<GithubRepo_type>>({});
     const [preferences, setPreferences] = useState<Partial<RepoPreferences>>(defaultPreferences);
+    
+    const [originalRepo, setOriginalRepo] = useState<Partial<GithubRepo_type>>({});
+    const [originalPreferences, setOriginalPreferences] = useState<Partial<RepoPreferences>>({});
+
     const [isSaving, setIsSaving] = useState(false);
+    const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+    const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
     useEffect(() => {
         if (initialRepo) {
+            const initialPrefs = { ...defaultPreferences, ...initialRepo.preferences };
             setRepo(initialRepo);
-            setPreferences({ ...defaultPreferences, ...initialRepo.preferences });
+            setPreferences(initialPrefs);
+
+            setOriginalRepo(initialRepo);
+            setOriginalPreferences(initialPrefs);
+            setHasUnsavedChanges(false);
         }
     }, [initialRepo]);
+
+    useEffect(() => {
+        const repoChanged = !isEqual(repo, originalRepo);
+        const preferencesChanged = !isEqual(preferences, originalPreferences);
+        setHasUnsavedChanges(repoChanged || preferencesChanged);
+    }, [repo, preferences, originalRepo, originalPreferences]);
+
 
     const handleSwitchChange = (key: keyof RepoPreferences, value: boolean) => {
         setPreferences(prev => ({ ...prev, [key]: value }));
@@ -59,6 +78,7 @@ export default function SettingPage() {
     const handleSaveChanges = async () => {
         if (!repo_id) return;
         setIsSaving(true);
+        setShowSuccessMessage(false);
         try {
             const updatedData = {
                 active: repo.active,
@@ -66,9 +86,17 @@ export default function SettingPage() {
                 preferences: preferences,
             };
             const updatedRepo = await updateRepository(repo_id, JSON.stringify(updatedData));
+            
+            const newPrefs = { ...defaultPreferences, ...updatedRepo.preferences };
             setRepo(updatedRepo);
-            setPreferences({ ...defaultPreferences, ...updatedRepo.preferences });
+            setPreferences(newPrefs);
+            
+            setOriginalRepo(updatedRepo);
+            setOriginalPreferences(newPrefs);
+
+            setShowSuccessMessage(true);
         } catch (err: any) {
+            console.error("Failed to save changes:", err);
         } finally {
             setIsSaving(false);
         }
@@ -92,11 +120,11 @@ export default function SettingPage() {
     };
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <div className="text-center p-10">Loading...</div>;
     }
 
     if (error) {
-        return <div>Error: {error}</div>;
+        return <div className="text-center p-10 text-red-500">Error: {error}</div>;
     }
 
     return (
@@ -106,11 +134,14 @@ export default function SettingPage() {
                     <p className="text-lg font-semibold text-zinc-600">Repository</p>
                     <h1 className="text-3xl font-bold text-zinc-900">{repo?.name}</h1>
                     <p className="text-sm text-neutral-500 mt-1">Configure the features for the pull request reviews.</p>
+                
                 </div>
-                <Button className='bg-blue-600 hover:bg-blue-800 hover:cursor-pointer' onClick={handleSaveChanges} disabled={isSaving}>
+                <Button className='bg-blue-600 hover:bg-blue-800 hover:cursor-pointer' onClick={handleSaveChanges} disabled={isSaving || !hasUnsavedChanges}>
                     {isSaving ? 'Saving...' : 'Save Changes'}
                 </Button>
             </header>
+            {hasUnsavedChanges && !isSaving && <p className="text-sm text-yellow-600 border-l-4 border-orange-400 p-4 bg-orange-200/40">There are unsaved changes.</p>}
+            {showSuccessMessage && <p className="text-sm text-green-600 border-l-4 border-green-400 p-4 bg-green-200/40">Preferences Updated.</p>}
             <Tabs defaultValue="General" className="w-full">
                 <TabsList>
                     <TabsTrigger value="General">General</TabsTrigger>
