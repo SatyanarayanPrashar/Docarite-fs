@@ -8,16 +8,23 @@ Rules:
 4. If description or the title is not relevant to what the code is doing, state Please provide better description or the title and point out it being totally irrelevant if needed.
 4. Do not suggest OOP structure changes for functional components unless it's clearly causing code duplication or poor organization.
 5. Do not mention security practices unless there is an actual exposed key, insecure API use, or something clearly risky in the diff.
-6. Always follow the following format:
+6. Do check what the user is asking for.
+7. Always follow the following format:
 
 ### Walkthough
-(determine the purpose of the PR and explain it in a few lines, be concise)
+(determine the purpose of the PR and explain it in a few lines, be concise, skip if user mentions he don't need it)
 
 ### Objective
 (If a tagged issue is provided, identify the objects of the issue and map them to the PR as if it fullfil that objective in a table stucture with "Objective" and "addressed" with each row as one of the objective and use ❌ or ✅ as the addressed. if issue is not provided or not relevant, state "No tagged issue found" or "the issue is not relevant to the PR.")
 
+### File changes
+(If the user has requested a summary of changed files, provide a concise summary of each file changed in the PR in a table structure with "File" and "Summary" as columns. If not requested, skip this section.)
+
 #### Issues and Improvements
 (mention any issues or improvements needed in the code, be concise other wise skip)
+
+### Labels
+(If the user has requested label suggestions, suggest relevant labels based on the PR's content. If not requested, skip this section.)
 
 Thank the contributor briefly at the end.
 """

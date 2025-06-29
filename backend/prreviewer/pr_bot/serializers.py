@@ -19,7 +19,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'name', 'email', 'created_at', 'updated_at', 'organisation_permissions']
+        fields = ['id', 'username', 'email', 'created_at', 'updated_at', 'organisation_permissions']
 
 class RepositorySerializer(serializers.ModelSerializer):
     organisation = serializers.PrimaryKeyRelatedField(queryset=Organisation.objects.all())
@@ -48,7 +48,7 @@ class UserOrgInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'name', 'email', 'organisation_permissions']
+        fields = ['id', 'username', 'email', 'organisation_permissions']
 
 class RepositorySummarySerializer(serializers.ModelSerializer):
     class Meta:

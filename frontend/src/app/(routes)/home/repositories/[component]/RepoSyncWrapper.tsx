@@ -85,7 +85,7 @@ export default function RepoSyncWrapper() {
                 ) : (
                     userInfo && (
                         <RegisterState
-                            userName={userInfo.user_metadata.full_name ?? userInfo.email ?? ""}
+                            userName={userInfo.user_metadata.user_name ?? ""}
                             userEmail={userInfo.email ?? ""}
                             onRegisterSuccess={handleRegisterSuccess}
                         />

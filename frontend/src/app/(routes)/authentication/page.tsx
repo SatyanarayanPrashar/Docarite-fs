@@ -11,7 +11,6 @@ import { FaGitlab } from 'react-icons/fa6';
 export default function Home() {
     
     const signInWithGitHub = async () => {
-        console.log(`${process.env.CALLBACK_URL} || ${window.location.origin}/auth/callback`,)
         try {
           const { error } = await supabase.auth.signInWithOAuth({
             provider: 'github',
