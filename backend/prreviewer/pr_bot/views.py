@@ -10,6 +10,7 @@ from django.views.decorators.http import require_http_methods
 from pr_bot.models import Organisation, Permission, Repository, User
 from pr_bot.serializers import OrganisationBasicSerializer, OrganisationSerializer, RepositorySerializer, RepositorySummarySerializer, UserOrgInfoSerializer, UserSerializer
 from webhook_handlers.webhook_handler import GitHubWebhookHandler
+from django.core.exceptions import ObjectDoesNotExist
 
 load_dotenv()
 logger = logging.getLogger(__name__)
@@ -26,9 +27,44 @@ def install_callback(request):
     return redirect(f"{GITHUB_INSTALLATION_REDIRECT_URL}?installation_id={installation_id}")
 
 
+def get_preference(username, repo_name):
+    """
+    Fetch user preferences from the database based on email and repo name.
+    """
+    try:
+        user = User.objects.get(username=username)
+        repo = Repository.objects.get(
+            name=repo_name,
+            organisation__in=user.organisations.all()
+        )
+        return {
+            "active": repo.active,
+            "preferences": repo.preferences
+        }
+    except ObjectDoesNotExist:
+        logger.error(f"User or repository not found for email: {username}, repo: {repo_name}")
+        return None
+
 @csrf_exempt
 def github_webhook(request):
-    handler = GitHubWebhookHandler(request)
+    print("Received GitHub webhook request", request)
+    try:
+        payload = json.loads(request.body)
+        username = payload["pull_request"]["user"]["login"]
+        repo_name = payload["repository"]["name"]
+    except (KeyError, json.JSONDecodeError) as e:
+        logger.error(f"Invalid or missing data in payload: {e}")
+        return JsonResponse({"error": f"Invalid or missing data: {e}"}, status=400)
+
+    repo_info = get_preference(username, repo_name)
+    if not repo_info:
+        logger.warning(f"No repo info found for {username} and {repo_name}")
+        return JsonResponse({"error": "Repository not found or inaccessible"}, status=404)
+
+    if repo_info.get("active") is False:
+        return JsonResponse({"status": "Repository is inactive"}, status=200)
+
+    handler = GitHubWebhookHandler(request, preference=repo_info.get("preferences"))
     return handler.handle()
 
 
@@ -220,8 +256,8 @@ def register_organisation_with_user(request):
 
         # Step 2: Create User
         user = User.objects.create(
-            name=user_name,
-            email=user_email
+            username=user_name,
+            email=user_email,
         )
 
         # Step 3: Link via Permission
@@ -235,7 +271,7 @@ def register_organisation_with_user(request):
         return JsonResponse({
             "user": {
                 "id": str(user.id),
-                "name": user.name,
+                "username": user.username,
                 "email": user.email
             },
             "organisation": {
