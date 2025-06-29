@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils"
 import { useState } from "react"
 import { Switch } from "./switch"
 import { GithubRepo_type } from "@/types/githube_types"
+import Link from "next/link"
 
 function Table({ className, ...props }: React.ComponentProps<"table">) {
   return (
@@ -105,9 +106,9 @@ const RepoRow = ({ repo }: { repo: GithubRepo_type }) => {
               </a>
           </TableCell>
           <TableCell>
-              <button className="text-neutral-500 hover:text-neutral-900 transition-colors" aria-label="Settings">
+              <Link href={`/home/repositories/settings?id=${repo.id}`} className="text-neutral-500 hover:text-neutral-900 transition-colors" aria-label="Settings">
                   <Bolt size={20} />
-              </button>
+              </Link>
           </TableCell>
           <TableCell>
               <Switch
