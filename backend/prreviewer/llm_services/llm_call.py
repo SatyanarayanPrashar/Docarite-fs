@@ -3,7 +3,7 @@ import os
 import requests
 from openai import OpenAI
 from dotenv import load_dotenv
-from llm_services.prompt import pr_reviewer_prompt, comment_reviewer_prompt
+from llm_services.prompt import pr_reviewer_prompt, comment_reviewer_prompt, reducer_prompt
 
 load_dotenv()
 
@@ -55,3 +55,19 @@ class LLM_Services:
             {"role": "user", "content": f"Below is the last feedback left by the reviewer bot:\n\n{last_comment}\n\nAnd here are the latest code changes from the most recent commit:\n\n{code_changes}\n\n"}
         ]
         return self.llm_call(messages)
+    
+    def reducer_call(self, comment):
+        messages = [
+            {"role": "system", "content": reducer_prompt},
+            {"role": "user", "content": comment}
+        ]
+        try:
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=messages,
+                temperature=0.4
+            )
+            return response.choices[0].message.content
+        except Exception as e:
+            logger.error(f"Error from OpenAI: {e}")
+            return None

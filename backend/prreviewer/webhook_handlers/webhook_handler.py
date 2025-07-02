@@ -77,6 +77,9 @@ class GitHubWebhookHandler:
 
         try:
             comment_text = self.llm.analyse_pr(pr_info, issue_info, preference) or "Thank you for your contribution 🚀!"
+            logger.info(f"Generated comment length: {len(comment_text)} characters")
+            comment_text = self.llm.reducer_call(comment_text) or comment_text
+            logger.info(f"Reduced to: {len(comment_text)} characters")
         except Exception as e:
             logger.error(f"Error analysing PR: {e}")
             comment_text = "Thank you for your contribution 🚀!"
