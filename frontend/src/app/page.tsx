@@ -13,13 +13,13 @@ export default function Home() {
     return (
         <div className="flex flex-col min-h-screen min-w-screen items-center relative z-10 overflow-x-hidden">
             <Navbar_landing />
-            <div className="relative h-[100vh] w-full bg-blue-100 flex items-center justify-center p-4">
+            <div className="relative w-full bg-blue-100 flex flex-col items-center p-4 pb-20 pt-40 shadow-[0_20px_100px_20px_rgba(214,231,254,1)]">
                 <motion.div
                     className="absolute top-[15%] left-[10%] w-[15%] h-[25%] z-0 blur-2xl"
                     animate={{ y: [0, -20, 0] }}
                     transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
                 >
-                    <div className="w-full h-full bg-blue-300/50 rounded-full"></div>
+                    <div className="w-full h-full bg-blue-300/50 rounded-full" />
                 </motion.div>
 
                 <motion.div
@@ -38,11 +38,11 @@ export default function Home() {
                     <div className="w-full h-full bg-sky-200/50 rounded-full"></div>
                 </motion.div>
 
-                <div className="relative z-10 w-full max-w-6xl bg-white/14 flex flex-col items-center backdrop-blur-xl rounded-4xl border border-white/10 shadow-[2px] p-10 md:p-20">
+                <div className="relative z-10 w-full max-w-6xl flex flex-col items-center">
                     <HeroSection />
                 </div>
 
-                <motion.div className="absolute top-160 z-20 w-[24rem] sm:w-[25rem] md:w-[35rem] lg:w-[50rem] 2xl:w-[60rem] aspect-[50/34] mx-auto rounded-lg overflow-hidde"
+                <motion.div className="relative mt-10 sm:mt-20 z-20 w-[24rem] sm:w-[25rem] md:w-[35rem] lg:w-[50rem] 2xl:w-[60rem] aspect-[50/34] mx-auto rounded-lg overflow-hidden"
                     initial={{ scale: 0, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{
@@ -56,12 +56,26 @@ export default function Home() {
                             src="/hero_img.png"
                             fill
                             alt="docarite_hero_image"
+                            className="object-contain"
                         />
                     </div>
                 </motion.div>
-            </div>
+                
+                {/* <div className="relative z-20 w-full max-w-lg mt-10 md:mt-20 lg:mt-32 p-4 md:p-8 bg-white/14 backdrop-blur-xl rounded-4xl border border-white/10 shadow-lg"> */}
+                    {/* The "Walkthrough" content from the images goes here */}
+                    <div className="relative w-full h-full">
+                         <Image
+                            src="/docarite-walkthrough.png"
+                            fill
+                            alt="Docarite Walkthrough"
+                            className="object-contain"
+                        />
+                    </div>
+                {/* </div> */}
 
-            <div className="flex flex-col gap-4 w-full max-w-6xl mx-auto pt-40 sm:pt-64 lg:pt-[32rem] px-4 border-l border-r pb-10">
+            </div>
+            
+            <div className="flex flex-col gap-4 w-full max-w-6xl mx-auto py-20 sm:py-64 lg:py-[12rem] px-4 border-l border-r pb-10">
                 <p className="text-base sm:text-lg md:text-xl text-zinc-600 text-center">
                     No more manual grunt work in your dev pipeline.
                 </p>
@@ -122,7 +136,6 @@ export default function Home() {
                     <p className="py-2 px-6 w-full text-zinc-900 text-lg md:text-xl border-l-4 border-blue-600">Smart Issue Sync</p>
                     <p className="px-7 text-zinc-600 text-base pb-7">Links code with issues from GitHub, Jira, and more to keep development aligned with priorities.</p>
                 </div>
-
             </div>
 
             <div className="flex flex-col gap-4 w-full max-w-6xl mx-auto py-10 sm:py-14 lg:py-[6rem] px-4 border-l border-r">
@@ -145,7 +158,7 @@ export default function Home() {
                 </p>
                 <div className="flex gap-4 items-center text-white/80">
                     <FaLock />
-                    <p >
+                    <p>
                         Review environments spin up instantly and disappear without a trace.
                     </p>
                 </div>
@@ -235,7 +248,6 @@ export default function Home() {
                                 Contact us
                             </Link>
                         </div>
-
                         <p className="mt-4 text-sm text-slate-500">
                             2-click signup with GitHub/GitLab
                         </p>
@@ -248,10 +260,8 @@ export default function Home() {
                             className="object-contain"
                         />
                     </div>
-
                 </div>
             </div>
-
             <Footer_landing />
         </div>
     );
