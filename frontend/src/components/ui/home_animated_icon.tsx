@@ -1,4 +1,4 @@
-import { motion, MotionValue, useScroll, useTransform } from 'framer-motion';
+import { motion, MotionValue, useTransform } from 'framer-motion';
 
 export const AnimatedIcon = ({
     icon: Icon,
