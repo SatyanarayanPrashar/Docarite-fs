@@ -53,8 +53,6 @@ export default function ReadmeGenerator() {
             additional_mssg: additionalMsg,
         };
 
-        console.log("Payload to send:", payload);
-
         try {
             const response = await fetch("http://127.0.0.1:8000/docarite/readme/build/", {
                 method: 'POST',

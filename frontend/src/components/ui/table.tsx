@@ -6,7 +6,8 @@ import { FaGithub } from "react-icons/fa"
 import { cn } from "@/lib/utils"
 import { useState } from "react"
 import { Switch } from "./switch"
-import { GithubRepo } from "@/types/githube_types"
+import { GithubRepo_type } from "@/types/githube_types"
+import Link from "next/link"
 
 function Table({ className, ...props }: React.ComponentProps<"table">) {
   return (
@@ -82,7 +83,7 @@ function TableCell({ className, ...props }: React.ComponentProps<"td">) {
   )
 }
 
-const RepoRow = ({ repo }: { repo: GithubRepo }) => {
+const RepoRow = ({ repo }: { repo: GithubRepo_type }) => {
   const [isActive, setIsActive] = useState(repo.active);
 
   const handleToggle = () => {
@@ -93,28 +94,28 @@ const RepoRow = ({ repo }: { repo: GithubRepo }) => {
       <TableRow>
           <TableCell className="font-medium">
               <div className="flex items-center gap-4">
-                  <span>{repo.full_name.split("/")[1]}</span>
+                  <span>{repo.name}</span>
                   <span className={`py-0.5 px-2.5 text-xs font-semibold border rounded-full ${repo.private ? "bg-gray-100 text-gray-800 border-gray-300" : "bg-green-100 text-green-800 border-green-300"}`}>
                       {repo.private ? "Private" : "Public"}
                   </span>
               </div>
           </TableCell>
           <TableCell>
-              <a href={repo.html_url} target="_blank" rel="noopener noreferrer" className="text-neutral-500 hover:text-neutral-900 transition-colors">
+              <a href={repo.github_url} target="_blank" rel="noopener noreferrer" className="text-neutral-500 hover:text-neutral-900 transition-colors">
                   <FaGithub size={20} />
               </a>
           </TableCell>
           <TableCell>
-              <button className="text-neutral-500 hover:text-neutral-900 transition-colors" aria-label="Settings">
+              <Link href={`/home/repositories/settings?id=${repo.id}`} className="text-neutral-500 hover:text-neutral-900 transition-colors" aria-label="Settings">
                   <Bolt size={20} />
-              </button>
+              </Link>
           </TableCell>
           <TableCell>
               <Switch
                   id={`active-${repo.id}`}
                   checked={isActive}
                   onCheckedChange={handleToggle}
-                  aria-label={`Activate ${repo.full_name}`}
+                  aria-label={`Activate ${repo.active}`}
               />
           </TableCell>
       </TableRow>

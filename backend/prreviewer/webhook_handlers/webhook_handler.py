@@ -25,8 +25,9 @@ logger = logging.getLogger(__name__)
 
 
 class GitHubWebhookHandler:
-    def __init__(self, request):
+    def __init__(self, request, preference=None):
         self.request = request
+        self.preference = preference
         self.secret = GIT_SECRET_KEY.encode() if GIT_SECRET_KEY else b"default_fallback_secret"
         self.parser = EventParser(request)
         self.validator = SignatureValidator(request, self.secret)
@@ -42,13 +43,13 @@ class GitHubWebhookHandler:
             return JsonResponse({"error": "Invalid payload"}, status=400)
 
         if event == "pull_request" and payload.get("action") in ["opened", "reopened"]:
-            return self.handle_pull_request(payload)
-        elif event == "pull_request" and payload.get("action") == "synchronize":
+            return self.handle_pull_request(payload, self.preference)
+        elif event == "pull_request" and payload.get("action") == "synchronize" and self.preference.get("automaticIncrementalReview") == "commit_feedback":
             return self.process_commit_feedback(payload)
 
         return JsonResponse({"status": "ok"})
 
-    def handle_pull_request(self, payload):
+    def handle_pull_request(self, payload, preference):
         try:
             repo = payload["repository"]["full_name"]
             pr_number = payload["pull_request"]["number"]
@@ -75,7 +76,7 @@ class GitHubWebhookHandler:
             issue_info = self.fetch_linked_issue(repo, linked_issues[0], access_token)
 
         try:
-            comment_text = self.llm.analyse_pr(pr_info, issue_info) or "Thank you for your contribution 🚀!"
+            comment_text = self.llm.analyse_pr(pr_info, issue_info, preference) or "Thank you for your contribution 🚀!"
         except Exception as e:
             logger.error(f"Error analysing PR: {e}")
             comment_text = "Thank you for your contribution 🚀!"
