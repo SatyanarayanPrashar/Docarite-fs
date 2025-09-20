@@ -63,14 +63,14 @@ export default function Home() {
                 
                 {/* <div className="relative z-20 w-full max-w-lg mt-10 md:mt-20 lg:mt-32 p-4 md:p-8 bg-white/14 backdrop-blur-xl rounded-4xl border border-white/10 shadow-lg"> */}
                     {/* The "Walkthrough" content from the images goes here */}
-                    <div className="relative w-full h-full">
+                    {/* <div className="relative w-full h-full">
                          <Image
                             src="/docarite-walkthrough.png"
                             fill
                             alt="Docarite Walkthrough"
                             className="object-contain"
                         />
-                    </div>
+                    </div> */}
                 {/* </div> */}
 
             </div>
