@@ -36,10 +36,6 @@ export async function updateSession(request: NextRequest) {
 
   const url = request.nextUrl.clone()
 
-  // -------------------------------------------------------------
-  // LOGIC 1: If User IS Logged In
-  // -------------------------------------------------------------
-  // If they try to go to "/" or "/authentication", send them to "/home"
   if (user) {
     if (url.pathname === '/' || url.pathname === '/authentication') {
       url.pathname = '/home'
@@ -47,13 +43,9 @@ export async function updateSession(request: NextRequest) {
     }
   }
 
-  // -------------------------------------------------------------
-  // LOGIC 2: If User is NOT Logged In
-  // -------------------------------------------------------------
-  // If they try to access "/home" (or anything inside it), send them to "/authentication"
   if (!user) {
     if (url.pathname.startsWith('/home')) {
-      url.pathname = '/authentication' // <--- Redirect to your specific auth page
+      url.pathname = '/authentication'
       return NextResponse.redirect(url)
     }
   }
