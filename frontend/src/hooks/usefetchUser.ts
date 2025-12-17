@@ -1,21 +1,24 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { supabase } from '@/lib/supabase-client';
 import { User } from "@supabase/supabase-js";
+import { useRouter } from 'next/navigation'
 
 export const useUserInfo = () => {
-    const [userInfo, setUserInfo] = useState<User | null>(null);
-    const [userError, setUserError] = useState<string | null>(null);
+    const [userInfo, setUser] = useState<User | null>(null)
+    const [userError, setUserError] = useState<Error | null>(null);
+    const router = useRouter()
+
+    async function fetchUser() {
+        const { data: { user } } = await supabase.auth.getUser()
+        setUser(user)
+    }
 
     useEffect(() => {
-        const fetchUser = async () => {
-            const { data, error } = await supabase.auth.getUser();
-            if (error) {
-                setUserError("Could not fetch user information.");
-            } else {
-                setUserInfo(data.user);
-            }
-        };
-        fetchUser();
+        try {
+            fetchUser();
+        } catch (e) {
+            setUserError(e as Error);
+        }
     }, []);
 
     return { userInfo, userError };

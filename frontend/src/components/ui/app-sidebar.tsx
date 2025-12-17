@@ -2,7 +2,6 @@
 
 import { Home, ClipboardList, Bolt, LogOutIcon } from "lucide-react"
 import Image from "next/image";
-import { User } from '@supabase/supabase-js'
 
 import {
     Sidebar,
@@ -15,12 +14,12 @@ import {
     SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { FaGithub } from "react-icons/fa"
-import { useEffect, useState } from "react"
-import { supabase } from "@/lib/supabase"
-import { redirect, useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabase-client'
+import { useRouter } from 'next/navigation'
 import { Separator } from "./separator"
 import Link from "next/link";
 import { useOrganisation } from "@/hooks/usefetchOrg";
+import { useUserInfo } from "@/hooks/usefetchUser";
 
 const items = [
     {
@@ -41,25 +40,21 @@ const items = [
 ]
 
 export function AppSidebar() {
-    const [user, setUser] = useState<User | null>(null)
+    const { userInfo, userError } = useUserInfo();
     const router = useRouter()
-    const { organisation, loading} = useOrganisation(user?.user_metadata?.email)
+    const { organisation, loading} = useOrganisation(userInfo?.user_metadata?.email)
 
     const handleLogout = async () => {
-        await supabase.auth.signOut()
-        router.push('/')
-    }
-
-    useEffect(() => {
-        async function fetchUser() {
-            const { data: { user } } = await supabase.auth.getUser()
-            if (!user) {
-                redirect('/authentication')
-            }
-            setUser(user)
+        const { error } = await supabase.auth.signOut()
+        
+        if (error) {
+            console.error('Logout error:', error)
+            return
         }
-        fetchUser();
-    }, []);
+
+        router.refresh()
+        router.push('/')
+      }
 
     if (!loading) {
         return (
@@ -72,9 +67,9 @@ export function AppSidebar() {
                                     <FaGithub className="h-10 w-10 text-neutral-700" />
                                     <div className="flex flex-col">
                                         <p className="text-lg">
-                                            {user?.user_metadata.full_name.length > 24 
-                                                ? `${user?.user_metadata.full_name.slice(0, 24)}...` 
-                                                : user?.user_metadata.full_name}
+                                            {userInfo?.user_metadata.full_name.length > 24 
+                                                ? `${userInfo?.user_metadata.full_name.slice(0, 24)}...` 
+                                                : userInfo?.user_metadata.full_name}
                                         </p>
                                         {organisation?.name.length &&
                                             <p>{organisation.name.length > 24 
@@ -101,9 +96,9 @@ export function AppSidebar() {
                     </SidebarGroup>
                 </SidebarContent>
                 <div className="p-2 flex items-center gap-3 border m-2 rounded-lg">
-                    {user?.user_metadata.avatar_url &&
+                    {userInfo?.user_metadata.avatar_url &&
                         <Image
-                            src={user?.user_metadata.avatar_url}
+                            src={userInfo?.user_metadata.avatar_url}
                             alt="Profile"
                             width={42}
                             height={42}
@@ -113,9 +108,9 @@ export function AppSidebar() {
                     <div className="flex-1 flex flex-col justify-between">
                         <div className="flex justify-between">
                             <p className="font-medium truncate">
-                                {user?.user_metadata.full_name.length > 14 
-                                    ? `${user?.user_metadata.full_name.slice(0, 14)}...` 
-                                    : user?.user_metadata.full_name}
+                                {userInfo?.user_metadata.full_name.length > 14 
+                                    ? `${userInfo?.user_metadata.full_name.slice(0, 14)}...` 
+                                    : userInfo?.user_metadata.full_name}
                             </p>
                             <button
                                 onClick={handleLogout}
