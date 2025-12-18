@@ -31,7 +31,7 @@ class LLM_Client:
                 model=self.model_name,
                 input=input_list
             )
-            return response
+            return response.output[0].content[0].text
         except Exception as e:
             logger.error(f"Error generating text: {e}")
             return ""

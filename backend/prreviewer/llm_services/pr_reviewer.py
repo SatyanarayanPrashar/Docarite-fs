@@ -14,7 +14,8 @@ class PR_Reviewer:
         messages = [
             {"role": "system", "content": pr_reviewer_prompt}
         ]
-
+        
+        preference_note = ""
         if preferences:
             lang = preferences.get("reviewLanguage", "English")
             walkthrough = preferences.get("summaryInWalkthrough", False)

@@ -26,7 +26,7 @@ class GitHubWebhookHandler:
             PRIVATE_KEY = f.read()
 
         self.auth = GitHubAuthenticator(config['github']['app_id'], PRIVATE_KEY)
-        self.pr_reviewer = PR_Reviewer(self.config)
+        self.pr_reviewer = PR_Reviewer(config)
         self.config = config
 
     def handle(self):
@@ -61,7 +61,7 @@ class GitHubWebhookHandler:
         if not access_token:
             return JsonResponse({"error": "Access token missing"}, status=502)
 
-        pr_body = payload["pull_request"].get("body", "")
+        pr_body = payload["pull_request"].get("body", "") or ""
         linked_issues = re.findall(r"(?:Issue|Fixes|Closes|Resolves)[:\s]*#(\d+)", pr_body, re.IGNORECASE)
 
         pr_info = self.fetch_pr_info(repo, pr_number, access_token)

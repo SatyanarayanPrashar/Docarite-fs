@@ -58,6 +58,7 @@ def github_webhook(request):
         return JsonResponse({"error": f"Invalid or missing data: {e}"}, status=400)
 
     repo_info = get_preference(username, repo_name)
+    
     if not repo_info:
         logger.warning(f"No repo info found for {username} and {repo_name}")
         return JsonResponse({"error": "Repository not found or inaccessible"}, status=404)
