@@ -1,29 +1,12 @@
-import logging
-import os
-import requests
-from openai import OpenAI
-from dotenv import load_dotenv
 from llm_services.prompt import pr_reviewer_prompt, comment_reviewer_prompt
+from llm_services.llm_client import LLM_Client
+from utils.logger import get_logger
 
-load_dotenv()
+logger = get_logger()
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-client = OpenAI(api_key=OPENAI_API_KEY)
-logger = logging.getLogger(__name__)
-
-class LLM_Services:
-
-    def llm_call(self, messages):
-        try:
-            completion = client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=messages,
-                temperature=0.4
-            )
-            return completion.choices[0].message.content
-        except Exception as e:
-            logger.error(f"Error from OpenAI: {e}")
-            return None
+class PR_Reviewer:
+    def __init__(self, config=None):
+        self.llm_client = LLM_Client(config)
 
     def analyse_pr(self, pr_info, issue_info=None, preferences=None):
         issue_body = issue_info.get("body", "No tagged issue.") if issue_info else "No tagged issue."
@@ -47,7 +30,7 @@ class LLM_Services:
             preference_note = "Note: " + " ".join(note_parts)
 
         messages.append({"role": "user", "content": f"{preference_note} \n\n Title: {pr_info.get('title')}\n\nDescription: {pr_info.get('body')}\n\nChanges:\n{pr_info.get('code_changes')}\n\nTagged Issue: {issue_body}"})
-        return self.llm_call(messages)
+        return self.llm_client.invoke(messages)
 
     def analyse_commit_changes(self, last_comment, code_changes):
         messages = [

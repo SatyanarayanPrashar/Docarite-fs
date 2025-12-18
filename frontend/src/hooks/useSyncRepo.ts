@@ -1,6 +1,4 @@
 import { useState } from "react";
-// import { supabase } from "@/lib/supabase";
-import { supabase } from '@/lib/supabase-client';
 import { Organisation_type } from "@/types/model_types";
 
 interface GithubRepoProps {
@@ -15,6 +13,14 @@ interface Github_response {
     active: boolean;
 }
 
+const getCookie = (name: string) => {
+  if (typeof document === 'undefined') return null;
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop()?.split(';').shift();
+  return null;
+}
+
 export const useSyncGitHubRepos = ({ organisation, onSyncSuccess }: GithubRepoProps) => {
     const [isSyncing, setIsSyncing] = useState(false);
 
@@ -27,10 +33,13 @@ export const useSyncGitHubRepos = ({ organisation, onSyncSuccess }: GithubRepoPr
         setIsSyncing(true);
 
         try {
-            const { data: { session } } = await supabase.auth.getSession();
-            const githubToken = session?.provider_token;
+            // FIX: Read the token from the cookie we set in the callback
+            const githubToken = getCookie('gh_provider_token');
 
-            if (!githubToken) throw new Error("GitHub provider token not found.");
+            if (!githubToken) {
+                console.error("Token missing. Please try logging out and logging back in.");
+                throw new Error("GitHub provider token not found in cookies.");
+            }
 
             const githubRes = await fetch(
                 `https://api.github.com/user/installations/${installationId}/repositories`,

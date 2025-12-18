@@ -2,37 +2,32 @@ import re
 from django.http import JsonResponse
 from django.http import JsonResponse, HttpResponseForbidden
 import os
-from dotenv import load_dotenv
 import requests
 import logging
+from llm_services.pr_reviewer import PR_Reviewer
 from webhook_handlers.github_authenticator import EventParser, GitHubAuthenticator, SignatureValidator
-from llm_services.llm_call import LLM_Services
-
-load_dotenv()
 from pathlib import Path
 
-GITHUB_INSTALLATION_REDIRECT_URL = os.getenv("GITHUB_INSTALLATION_REDIRECT_URL")
-APP_ID = os.getenv("GITHUB_APP_ID")
-PVT_KEY = os.getenv("PVT_KEY")
-GIT_SECRET_KEY = os.getenv("GIT_SECRET_KEY")
 BASE_DIR = Path(__file__).resolve().parent.parent
-PEM_PATH = BASE_DIR / PVT_KEY
-
-with open(PEM_PATH, 'r') as f:
-    PRIVATE_KEY = f.read()
 
 logger = logging.getLogger(__name__)
 
-
 class GitHubWebhookHandler:
-    def __init__(self, request, preference=None):
+    def __init__(self, request, preference=None, config=None):
         self.request = request
         self.preference = preference
+        GIT_SECRET_KEY = config['github']['secret_key']
         self.secret = GIT_SECRET_KEY.encode() if GIT_SECRET_KEY else b"default_fallback_secret"
         self.parser = EventParser(request)
-        self.validator = SignatureValidator(request, self.secret)
-        self.auth = GitHubAuthenticator(APP_ID, PRIVATE_KEY)
-        self.llm = LLM_Services()
+        self.validator = SignatureValidator(request, self.secret)\
+        
+        PEM_PATH = BASE_DIR / config['github']['pvt_key']
+        with open(PEM_PATH, 'r') as f:
+            PRIVATE_KEY = f.read()
+
+        self.auth = GitHubAuthenticator(config['github']['app_id'], PRIVATE_KEY)
+        self.pr_reviewer = PR_Reviewer(self.config)
+        self.config = config
 
     def handle(self):
         if not self.validator.is_valid():
@@ -76,7 +71,7 @@ class GitHubWebhookHandler:
             issue_info = self.fetch_linked_issue(repo, linked_issues[0], access_token)
 
         try:
-            comment_text = self.llm.analyse_pr(pr_info, issue_info, preference) or "Thank you for your contribution 🚀!"
+            comment_text = self.pr_reviewer.analyse_pr(pr_info, issue_info, preference) or "Thank you for your contribution 🚀!"
         except Exception as e:
             logger.error(f"Error analysing PR: {e}")
             comment_text = "Thank you for your contribution 🚀!"
@@ -97,31 +92,6 @@ class GitHubWebhookHandler:
         except Exception as e:
             logger.error(f"Failed to post comment: {e}")
             return JsonResponse({"error": "Failed to post comment"}, status=502)
-
-
-
-        try:
-            self.repo = self.payload["repository"]["full_name"]
-            self.pr_number = self.payload["pull_request"]["number"]
-            self.installation_id = self.payload["installation"]["id"]
-        except KeyError as e:
-            logger.error(f"Missing key in payload: {e}")
-            return JsonResponse({"error": f"Missing key {e}"}, status=400)
-
-        if not self._create_jwt():
-            return JsonResponse({"error": "JWT creation failed"}, status=500)
-        if not self._get_access_token():
-            return JsonResponse({"error": "Access token missing"}, status=502)
-
-        issue_info = self._fetch_issue_info()
-
-        try:
-            comment_text = analyse_pr(self.payload, self.access_token, issue_info) or "Thank you for your contribution 🚀!"
-        except Exception as e:
-            logger.error(f"Error analysing PR: {e}")
-            comment_text = "Thank you for your contribution 🚀!"
-
-        return self._post_comment(comment_text)
     
     def fetch_linked_issue(self, repo_full_name, issue_number, access_token):
         """
@@ -220,7 +190,7 @@ class GitHubWebhookHandler:
             return JsonResponse({"error": "Failed to fetch review info"}, status=502)
 
         try:
-            comment_text = self.llm.analyse_commit_changes(
+            comment_text = self.pr_reviewer.analyse_commit_changes(
                 review_info.get('last_comment'),
                 review_info.get('code_changes')
             )

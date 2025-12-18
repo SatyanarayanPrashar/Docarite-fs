@@ -24,22 +24,33 @@ export async function GET(request: Request) {
               )
             } catch {
               // The `setAll` method was called from a Server Component.
-              // This can be ignored if you have middleware refreshing
-              // user sessions.
             }
           },
         },
       }
     )
     
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code)
     
     if (!error) {
-      const forwardedHost = request.headers.get('x-forwarded-host') // original origin before load balancer
+      // 2. Extract the Provider Token (GitHub Access Token)
+      const providerToken = data.session?.provider_token
+
+      // 3. Store it in a specific cookie that your Client Hook can read
+      if (providerToken) {
+        cookieStore.set('gh_provider_token', providerToken, {
+            path: '/',
+            httpOnly: false, // Vital: Allows client-side JS to read this cookie
+            sameSite: 'lax',
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: 3600 * 24 // Expire after 1 day
+        })
+      }
+
+      const forwardedHost = request.headers.get('x-forwarded-host') 
       const isLocalEnv = process.env.NODE_ENV === 'development'
       
       if (isLocalEnv) {
-        // we can be sure that there is no load balancer in between, so no need to watch for X-Forwarded-Host
         return NextResponse.redirect(`${origin}${next}`)
       } else if (forwardedHost) {
         return NextResponse.redirect(`https://${forwardedHost}${next}`)
@@ -48,7 +59,6 @@ export async function GET(request: Request) {
       }
     } else {
         console.error('🔥 Supabase Auth Error:', error.message)
-        console.error('Code received:', code)
     }
   }
 
