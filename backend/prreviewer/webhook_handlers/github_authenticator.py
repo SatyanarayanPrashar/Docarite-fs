@@ -39,7 +39,7 @@ class GitHubAuthenticator:
         except Exception as e:
             logger.error(f"Failed to get access token: {e}")
             return None
-        
+
 
 class SignatureValidator:
     def __init__(self, request, secret: bytes):

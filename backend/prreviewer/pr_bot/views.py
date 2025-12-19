@@ -1,6 +1,4 @@
 import os
-from dotenv import load_dotenv
-import logging
 import json
 import uuid
 from django.http import JsonResponse
@@ -12,10 +10,13 @@ from pr_bot.serializers import OrganisationBasicSerializer, OrganisationSerializ
 from webhook_handlers.webhook_handler import GitHubWebhookHandler
 from django.core.exceptions import ObjectDoesNotExist
 
-load_dotenv()
-logger = logging.getLogger(__name__)
+from utils.config_loader import load_config
+from utils.logger import get_logger
 
-GITHUB_INSTALLATION_REDIRECT_URL = os.getenv("GITHUB_INSTALLATION_REDIRECT_URL")
+config = load_config("config.yaml")
+logger = get_logger()
+
+# GITHUB_INSTALLATION_REDIRECT_URL = os.getenv("GITHUB_INSTALLATION_REDIRECT_URL")
 
 def install_callback(request):
     installation_id = request.GET.get("installation_id")
@@ -24,7 +25,7 @@ def install_callback(request):
     # Save this installation ID to DB or link to the logged-in user
     print(f"Installation complete with ID: {installation_id}, action: {setup_action}")
 
-    return redirect(f"{GITHUB_INSTALLATION_REDIRECT_URL}?installation_id={installation_id}")
+    return redirect(f"{config['github']['installation_redirect_url']}?installation_id={installation_id}")
 
 
 def get_preference(username, repo_name):
@@ -57,6 +58,7 @@ def github_webhook(request):
         return JsonResponse({"error": f"Invalid or missing data: {e}"}, status=400)
 
     repo_info = get_preference(username, repo_name)
+    
     if not repo_info:
         logger.warning(f"No repo info found for {username} and {repo_name}")
         return JsonResponse({"error": "Repository not found or inaccessible"}, status=404)
@@ -64,7 +66,7 @@ def github_webhook(request):
     if repo_info.get("active") is False:
         return JsonResponse({"status": "Repository is inactive"}, status=200)
 
-    handler = GitHubWebhookHandler(request, preference=repo_info.get("preferences"))
+    handler = GitHubWebhookHandler(request, preference=repo_info.get("preferences"), config=config)
     return handler.handle()
 
 

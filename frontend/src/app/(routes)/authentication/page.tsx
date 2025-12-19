@@ -1,10 +1,8 @@
 "use client"
 
 import Comming_soon_tag from '@/components/comming_soon';
-import { supabase } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase-client';
 import Image from "next/image";
-import { redirect } from 'next/navigation';
-import { useEffect } from 'react';
 import { FaGithub } from "react-icons/fa";
 import { FaGitlab } from 'react-icons/fa6';
 
@@ -16,7 +14,7 @@ export default function Home() {
             provider: 'github',
             options: {
             //   redirectTo: `https://docarite.com/auth/callback`,
-              redirectTo: `http://localhost:3000//auth/callback`,
+              redirectTo: `http://localhost:3000/auth/callback`,
             },
           })
           if (error) throw error
@@ -24,16 +22,6 @@ export default function Home() {
           console.error(error)
         }
     }
-
-    useEffect(() => {
-        async function fetchUser() {
-            const { data: { user } } = await supabase.auth.getUser()
-            if (user) {
-                redirect('/home')
-            }
-        }
-        fetchUser();
-    }, []);
     
     return (
         <div className="relative h-[100vh] w-screen bg-blue-100 flex items-center justify-center p-4">

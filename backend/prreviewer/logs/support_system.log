@@ -1,0 +1,13 @@
+2025-12-18 20:37:11,142 - support_system - INFO - Received data for syncing GitHub repositories:
+2025-12-18 20:37:11,145 - support_system - INFO - Organisation found: Organisation object (aa8c55ad-a110-495f-8c13-146d9094d0de)
+2025-12-18 20:37:11,145 - support_system - INFO - Installed repository URLs: {'https://github.com/SatyanarayanPrashar/customer-support-agent', 'https://github.com/SatyanarayanPrashar/agentic-concepts', 'https://github.com/SatyanarayanPrashar/bhive-assignment'}
+2025-12-18 20:37:11,149 - support_system - INFO - Database repository URLs: {'https://github.com/SatyanarayanPrashar/Docarite-fs'}
+2025-12-18 20:37:11,149 - support_system - INFO - Repositories to deactivate: {'https://github.com/SatyanarayanPrashar/Docarite-fs'}
+2025-12-18 20:37:11,150 - support_system - INFO - Repository to create: https://github.com/SatyanarayanPrashar/agentic-concepts
+2025-12-18 20:37:11,151 - support_system - INFO - Repository to create: https://github.com/SatyanarayanPrashar/bhive-assignment
+2025-12-18 20:37:11,151 - support_system - INFO - Repository to create: https://github.com/SatyanarayanPrashar/customer-support-agent
+2025-12-18 20:37:11,160 - support_system - INFO - Repository sync response: {'message': 'Repository sync completed.', 'deactivated': ['https://github.com/SatyanarayanPrashar/Docarite-fs'], 'activated': [], 'created': ['https://github.com/SatyanarayanPrashar/agentic-concepts', 'https://github.com/SatyanarayanPrashar/bhive-assignment', 'https://github.com/SatyanarayanPrashar/customer-support-agent']}
+2025-12-18 21:19:14,366 - support_system - ERROR - Error generating text: 'Response' object has no attribute 'choices'
+2025-12-18 21:19:53,883 - support_system - ERROR - Error generating text: 'Response' object has no attribute 'choices'
+2025-12-18 21:21:48,025 - support_system - ERROR - Error generating text: Missing required arguments; Expected either ('messages' and 'model') or ('messages', 'model' and 'stream') arguments to be given
+2025-12-18 21:22:36,560 - support_system - ERROR - Error generating text: 'ChatCompletionMessage' object is not subscriptable
