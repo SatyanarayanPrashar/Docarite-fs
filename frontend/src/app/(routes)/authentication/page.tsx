@@ -3,8 +3,6 @@
 import Comming_soon_tag from '@/components/comming_soon';
 import { supabase } from '@/lib/supabase-client';
 import Image from "next/image";
-import { redirect } from 'next/navigation';
-import { useEffect } from 'react';
 import { FaGithub } from "react-icons/fa";
 import { FaGitlab } from 'react-icons/fa6';
 

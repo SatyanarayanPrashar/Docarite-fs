@@ -54,7 +54,7 @@ export function AppSidebar() {
 
         router.refresh()
         router.push('/')
-      }
+    }
 
     if (!loading) {
         return (
@@ -110,7 +110,9 @@ export function AppSidebar() {
                             <p className="font-medium truncate">
                                 {userInfo?.user_metadata.full_name.length > 14 
                                     ? `${userInfo?.user_metadata.full_name.slice(0, 14)}...` 
-                                    : userInfo?.user_metadata.full_name}
+                                    : userInfo?.user_metadata.full_name
+                                }
+                                {userError && <span className="text-red-500 ml-2">Error loading name</span>}
                             </p>
                             <button
                                 onClick={handleLogout}

@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
 import { supabase } from '@/lib/supabase-client';
 import { User } from "@supabase/supabase-js";
-import { useRouter } from 'next/navigation'
 
 export const useUserInfo = () => {
     const [userInfo, setUser] = useState<User | null>(null)
     const [userError, setUserError] = useState<Error | null>(null);
-    const router = useRouter()
 
     async function fetchUser() {
         const { data: { user } } = await supabase.auth.getUser()
