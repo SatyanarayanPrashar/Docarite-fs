@@ -1,4 +1,5 @@
-from llm_services.prompt import pr_reviewer_prompt, comment_reviewer_prompt
+import json
+from llm_services.prompt import pr_reviewer_prompt, comment_reviewer_prompt, line_by_line_reviewer_prompt
 from llm_services.llm_client import LLM_Client
 from utils.logger import get_logger
 
@@ -38,4 +39,19 @@ class PR_Reviewer:
             {"role": "system", "content": comment_reviewer_prompt},
             {"role": "user", "content": f"Below is the last feedback left by the reviewer bot:\n\n{last_comment}\n\nAnd here are the latest code changes from the most recent commit:\n\n{code_changes}\n\n"}
         ]
-        return self.llm_call(messages)
+        return self.llm_client.invoke(messages)
+    
+    def analyse_pr_line_by_line(self, pr_info):
+        messages = [
+            {"role": "system", "content": line_by_line_reviewer_prompt},
+            {"role": "user", "content": f"Changes:\n{pr_info.get('code_changes')}"}
+        ]
+        
+        response = self.llm_client.invoke(messages)
+        
+        try:
+            content = response.strip().replace("```json", "").replace("```", "")
+            return json.loads(content)
+        except Exception as e:
+            logger.error(f"AI returned invalid JSON: {e}")
+            return []

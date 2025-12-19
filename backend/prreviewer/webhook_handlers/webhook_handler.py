@@ -70,13 +70,16 @@ class GitHubWebhookHandler:
         if linked_issues:
             issue_info = self.fetch_linked_issue(repo, linked_issues[0], access_token)
 
+        summary_text = None
+        line_comments = []
         try:
-            comment_text = self.pr_reviewer.analyse_pr(pr_info, issue_info, preference) or "Thank you for your contribution 🚀!"
+            summary_text = self.pr_reviewer.analyse_pr(pr_info, issue_info, preference) or "Thank you for your contribution 🚀!"
+            line_comments = self.pr_reviewer.analyse_pr_line_by_line(pr_info) or []
         except Exception as e:
             logger.error(f"Error analysing PR: {e}")
-            comment_text = "Thank you for your contribution 🚀!"
+            summary_text = "Thank you for your contribution 🚀!"
 
-        return self.post_comment(repo, pr_number, access_token, comment_text)
+        return self.post_review(repo, pr_number, access_token, summary_text, line_comments)
 
     def post_comment(self, repo, pr_number, access_token, text):
         url = f"https://api.github.com/repos/{repo}/issues/{pr_number}/comments"
@@ -92,6 +95,33 @@ class GitHubWebhookHandler:
         except Exception as e:
             logger.error(f"Failed to post comment: {e}")
             return JsonResponse({"error": "Failed to post comment"}, status=502)
+        
+    def post_review(self, repo, pr_number, access_token, summary, line_comments):
+        """
+        Posts a PR Review with optional line-by-line comments.
+        line_comments should be a list of dicts: 
+        [{'path': 'file.py', 'line': 10, 'body': 'AI: Use a constant here'}]
+        """
+        url = f"https://api.github.com/repos/{repo}/pulls/{pr_number}/reviews"
+        headers = {
+            "Authorization": f"token {access_token}",
+            "Accept": "application/vnd.github+json"
+        }
+        
+        payload = {
+            "body": summary,
+            "event": "COMMENT", # Posts comments without approving/rejecting
+            "comments": line_comments # This is the list of dicts from the AI
+        }
+
+        try:
+            res = requests.post(url, headers=headers, json=payload)
+            res.raise_for_status()
+            logger.info("Review with line comments posted successfully")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to post review: {e}")
+            return False
     
     def fetch_linked_issue(self, repo_full_name, issue_number, access_token):
         """
