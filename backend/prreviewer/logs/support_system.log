@@ -11,3 +11,4 @@
 2025-12-18 21:19:53,883 - support_system - ERROR - Error generating text: 'Response' object has no attribute 'choices'
 2025-12-18 21:21:48,025 - support_system - ERROR - Error generating text: Missing required arguments; Expected either ('messages' and 'model') or ('messages', 'model' and 'stream') arguments to be given
 2025-12-18 21:22:36,560 - support_system - ERROR - Error generating text: 'ChatCompletionMessage' object is not subscriptable
+2025-12-19 11:02:01,406 - support_system - ERROR - Invalid or missing data in payload: 'pull_request'
