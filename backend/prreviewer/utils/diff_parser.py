@@ -34,7 +34,8 @@ def add_line_numbers_to_diff(diff_text):
             current_line_number += 1
             
         elif line.startswith('-'): 
-            processed_lines.append(f"    | {line}")
+            continue
+            # processed_lines.append(f"    | {line}")
             
         else:
             processed_lines.append(line)

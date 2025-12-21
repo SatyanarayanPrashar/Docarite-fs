@@ -44,18 +44,16 @@ class PR_Reviewer:
     
     def analyse_pr_line_by_line(self, pr_info):
         raw_diff = pr_info.get('code_changes')
-        numbered_diff = add_line_numbers_to_diff(raw_diff)
-
+        if raw_diff:
+            raw_diff = add_line_numbers_to_diff(raw_diff)
+        else:
+            raw_diff = "None"
         messages = [
             {"role": "system", "content": line_by_line_reviewer_prompt},
-            {"role": "user", "content": f"Changes:\n{numbered_diff}"}
+            {"role": "user", "content": f"Changes:\n{raw_diff}"}
         ]
 
-        print("\n\ncode_changes:\n", numbered_diff, "\n\n")
-        
         response = self.llm_client.invoke(messages)
-
-        print("\n\nLine by line review response:\n", response, "\n\n")
         
         try:
             content = response.strip().replace("```json", "").replace("```", "")
