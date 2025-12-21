@@ -79,7 +79,12 @@ class GitHubWebhookHandler:
             logger.error(f"Error analysing PR: {e}")
             summary_text = "Thank you for your contribution 🚀!"
 
-        return self.post_review(repo, pr_number, access_token, summary_text, line_comments)
+        success = self.post_review(repo, pr_number, access_token, summary_text, line_comments)
+        
+        if success:
+            return JsonResponse({"message": "Review posted successfully"}, status=200)
+        else:
+            return JsonResponse({"error": "Failed to post review to GitHub"}, status=500)
 
     def post_comment(self, repo, pr_number, access_token, text):
         url = f"https://api.github.com/repos/{repo}/issues/{pr_number}/comments"
