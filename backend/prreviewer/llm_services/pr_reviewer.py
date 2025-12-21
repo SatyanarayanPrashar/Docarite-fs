@@ -1,4 +1,5 @@
 import json
+from utils.diff_parser import add_line_numbers_to_diff
 from llm_services.prompt import pr_reviewer_prompt, comment_reviewer_prompt, line_by_line_reviewer_prompt
 from llm_services.llm_client import LLM_Client
 from utils.logger import get_logger
@@ -42,12 +43,19 @@ class PR_Reviewer:
         return self.llm_client.invoke(messages)
     
     def analyse_pr_line_by_line(self, pr_info):
+        raw_diff = pr_info.get('code_changes')
+        numbered_diff = add_line_numbers_to_diff(raw_diff)
+
         messages = [
             {"role": "system", "content": line_by_line_reviewer_prompt},
-            {"role": "user", "content": f"Changes:\n{pr_info.get('code_changes')}"}
+            {"role": "user", "content": f"Changes:\n{numbered_diff}"}
         ]
+
+        print("\n\ncode_changes:\n", numbered_diff, "\n\n")
         
         response = self.llm_client.invoke(messages)
+
+        print("\n\nLine by line review response:\n", response, "\n\n")
         
         try:
             content = response.strip().replace("```json", "").replace("```", "")
