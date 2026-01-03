@@ -13,3 +13,6 @@
 2025-12-18 21:22:36,560 - support_system - ERROR - Error generating text: 'ChatCompletionMessage' object is not subscriptable
 2025-12-19 11:02:01,406 - support_system - ERROR - Invalid or missing data in payload: 'pull_request'
 2025-12-19 12:09:16,241 - support_system - ERROR - Invalid or missing data in payload: 'pull_request'
+2025-12-21 07:08:55,556 - support_system - ERROR - Invalid or missing data in payload: 'pull_request'
+2025-12-21 08:43:13,151 - support_system - ERROR - Invalid or missing data in payload: 'pull_request'
+2025-12-21 08:43:14,534 - support_system - ERROR - Invalid or missing data in payload: 'pull_request'
