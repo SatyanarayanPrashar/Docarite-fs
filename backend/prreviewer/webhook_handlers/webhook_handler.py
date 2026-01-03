@@ -38,8 +38,10 @@ class GitHubWebhookHandler:
             return JsonResponse({"error": "Invalid payload"}, status=400)
 
         if event == "pull_request" and payload.get("action") in ["opened", "reopened"]:
+            logger.info("New PR opened or reopened - handling review")
             return self.handle_pull_request(payload, self.preference)
         elif event == "pull_request" and payload.get("action") == "synchronize" and self.preference.get("automaticIncrementalReview") == "commit_feedback":
+            logger.info("New commit pushed to PR - handling commit feedback")
             return self.process_commit_feedback(payload)
 
         return JsonResponse({"status": "ok"})
