@@ -6,7 +6,15 @@ Docarite is an AI-powered GitHub PR Reviewer designed to automate code quality c
 ## ✨ Features
 
 #AI-Powered Reviews: 
-Leverages advanced LLMs to provide deep technical insights and catch bugs that static analysis might miss.In-line Comments: Delivers feedback directly on the relevant lines of code within the GitHub PR interface.Issue Integration: Automatically connects PR changes to existing GitHub issues for better traceability.Summary of Changes: Generates a concise, high-level overview of what the PR actually does.Customizable Style & Tone: Configure the reviewer to be "Strict," "Friendly," or "Educational" based on your team's culture.
+Leverages advanced LLMs to provide deep technical insights and catch bugs that static analysis might miss.
+
+In-line Comments: Delivers feedback directly on the relevant lines of code within the GitHub PR interface.
+
+Issue Integration: Automatically connects PR changes to existing GitHub issues for better traceability
+
+Summary of Changes: Generates a concise, high-level overview of what the PR actually does.
+
+Customizable Style & Tone: Configure the reviewer from dashboard.
 
 
 ### 🛠 Installation & Setup
@@ -65,7 +73,7 @@ npx smee -u https://smee.io/[url] --target http://127.0.0.1:8000/api/github/webh
 To get the url you can create a proxy server at smee.io
 
 
-4. Frontend (React/Next.js)Bashcd frontend
+4. Frontend (Next.js)
 ```bash
 npm install
 ```
